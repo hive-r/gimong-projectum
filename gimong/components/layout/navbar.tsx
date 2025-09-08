@@ -5,35 +5,46 @@ import { Button } from "@/components/ui/button"
 
 export default function Navbar() {
   return (
-    <header className="w-full border-b bg-white">
-      <div className="container mx-auto flex items-center justify-between px-4 py-3">
+    <header className="fixed top-0 left-0 z-50 w-full border-b bg-white/90 backdrop-blur-md shadow-sm">
+      <div className="container mx-auto flex items-center justify-between px-4 py-3 h-16">
         {/* Logo */}
-        <Link href="/" className="text-xl font-bold">
-          GIMONG
+        <Link href="/" className="flex flex-col justify-center leading-tight">
+          <span className="text-sm font-bold leading-none">LA TRINIDAD</span>
+          <span className="text-sm font-bold leading-none">COMMUNITY</span>
+          <span className="text-sm font-bold leading-none">OF BELIEVERS</span>
         </Link>
 
         {/* Navigation Links */}
-        <nav className="hidden md:flex gap-6">
-          <Link href="/" className="text-gray-700 hover:text-gray-900">
+        <nav className="hidden md:flex gap-8">
+          <Link
+            href="/"
+            className="text-gray-700 font-medium hover:text-primary transition-colors"
+          >
             Home
           </Link>
-          <Link href="/about" className="text-gray-700 hover:text-gray-900">
+          <Link
+            href="/about"
+            className="text-gray-700 font-medium hover:text-primary transition-colors"
+          >
             About
           </Link>
-          <Link href="/announcements" className="text-gray-700 hover:text-gray-900">
+          <Link
+            href="/announcements"
+            className="text-gray-700 font-medium hover:text-primary transition-colors"
+          >
             Announcements
           </Link>
-          <Link href="/resources" className="text-gray-700 hover:text-gray-900">
+          <Link
+            href="/resources"
+            className="text-gray-700 font-medium hover:text-primary transition-colors"
+          >
             Resources
-          </Link>
-          <Link href="/contact" className="text-gray-700 hover:text-gray-900">
-            Contact
           </Link>
         </nav>
 
-        {/* CTA Button */}
-        <Button asChild>
-          <Link href="/login">Login</Link>
+        {/* Contact Button */}
+        <Button asChild className="ml-4">
+          <Link href="/contact">Contact Us</Link>
         </Button>
       </div>
     </header>
