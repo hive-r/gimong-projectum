@@ -23,19 +23,19 @@ export default function Navbar() {
             Home
           </Link>
           <Link
-            href="/about"
+            href="/pages/about_page"
             className="text-gray-700 font-medium hover:text-primary transition-colors"
           >
             About
           </Link>
           <Link
-            href="/announcements"
+            href="/pages/announcements_page"
             className="text-gray-700 font-medium hover:text-primary transition-colors"
           >
             Announcements
           </Link>
           <Link
-            href="/resources"
+            href="/pages/resources_page"
             className="text-gray-700 font-medium hover:text-primary transition-colors"
           >
             Resources
@@ -44,7 +44,7 @@ export default function Navbar() {
 
         {/* Contact Button */}
         <Button asChild className="ml-4">
-          <Link href="/contact">Contact Us</Link>
+          <Link href="/pages/contact_page">Contact Us</Link>
         </Button>
       </div>
     </header>
