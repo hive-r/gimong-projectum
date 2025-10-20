@@ -42,12 +42,16 @@ export default function LoginPage() {
         default:
           router.push("/");
       }
-    } catch (error: any) {
-      toast.error(error.message || "Login failed");
-    } finally {
-      setLoading(false);
+    } catch (error: unknown) {
+    if (error instanceof Error) {
+      toast.error(error.message);
+    } else {
+      toast.error("Login failed");
     }
-  };
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-100 via-gray-200 to-gray-300 p-6">
