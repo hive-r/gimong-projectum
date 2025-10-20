@@ -7,6 +7,7 @@ import { Toaster } from "sonner";
 const robotoCondensed = Roboto_Condensed({
   subsets: ["latin"],
   weight: ["300", "400", "700"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
