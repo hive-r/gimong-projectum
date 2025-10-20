@@ -10,7 +10,6 @@ import {
   BookOpen,
 } from "lucide-react";
 import SectionHeader from "@/modules/components/sectionHeader";
-import { motion } from "framer-motion";
 
 const steps = [
   {
@@ -81,61 +80,37 @@ export default function GospelSection() {
         {/* Row 1 */}
         <div className="grid gap-8 md:grid-cols-3">
           {steps.slice(0, 3).map(({ title, description, verse, icon: Icon }, i) => (
-            <motion.div
-              key={title}
-              initial={{ opacity: 0, y: 50 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: i * 0.2 }}
-              viewport={{ once: true }}
-            >
-              <Card className="bg-white border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 text-center p-8 rounded-none">
-                <motion.div
-                  whileHover={{ scale: 1.1 }}
-                  className="flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 text-primary mb-5 mx-auto hover:bg-primary hover:text-white transition-all duration-300 shadow-sm"
-                >
+            <div key={title} className="transform transition-all duration-300 hover:-translate-y-1">
+              <Card className="bg-white border border-gray-100 shadow-sm hover:shadow-xl text-center p-8 rounded-none">
+                <div className="flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 text-primary mb-5 mx-auto hover:bg-primary hover:text-white transition-all duration-300 shadow-sm">
                   <Icon className="h-8 w-8" />
-                </motion.div>
+                </div>
                 <h3 className="text-4xl uppercase font-bold text-gray-900 mb-2">{title}</h3>
                 <p className="text-gray-600 text-lg leading-relaxed mb-2">{description}</p>
                 <p className="text-md italic text-gray-500">{verse}</p>
               </Card>
-            </motion.div>
+            </div>
           ))}
         </div>
 
         {/* Row 2 */}
         <div className="grid gap-8 md:grid-cols-2 max-w-4xl mx-auto">
           {steps.slice(3, 5).map(({ title, description, verse, icon: Icon }, i) => (
-            <motion.div
-              key={title}
-              initial={{ opacity: 0, y: 50 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: i * 0.2 }}
-              viewport={{ once: true }}
-            >
-              <Card className="bg-white border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 text-center p-8 rounded-none">
-                <motion.div
-                  whileHover={{ scale: 1.1 }}
-                  className="flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 text-primary mb-5 mx-auto hover:bg-primary hover:text-white transition-all duration-300 shadow-sm"
-                >
+            <div key={title} className="transform transition-all duration-300 hover:-translate-y-1">
+              <Card className="bg-white border border-gray-100 shadow-sm hover:shadow-xl text-center p-8 rounded-none">
+                <div className="flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 text-primary mb-5 mx-auto hover:bg-primary hover:text-white transition-all duration-300 shadow-sm">
                   <Icon className="h-8 w-8" />
-                </motion.div>
+                </div>
                 <h3 className="text-4xl uppercase font-bold text-gray-900 mb-2">{title}</h3>
                 <p className="text-gray-600 text-lg leading-relaxed mb-2">{description}</p>
                 <p className="text-md italic text-gray-500">{verse}</p>
               </Card>
-            </motion.div>
+            </div>
           ))}
         </div>
 
         {/* Final Call to Action */}
-        <motion.div
-          initial={{ opacity: 0, y: 60 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.3 }}
-          viewport={{ once: true }}
-          className="max-w-5xl mx-auto"
-        >
+        <div className="max-w-5xl mx-auto">
           {steps
             .filter((s) => s.highlight)
             .map(({ title, description, icon: Icon }) => (
@@ -144,12 +119,9 @@ export default function GospelSection() {
                 className="bg-primary text-white shadow-lg border-none rounded-none hover:shadow-2xl transition-all duration-300"
               >
                 <CardContent className="p-8 text-center">
-                  <motion.div
-                    whileHover={{ scale: 1.1, rotate: 5 }}
-                    className="flex items-center justify-center w-16 h-16 rounded-full bg-white/20 mx-auto mb-6"
-                  >
+                  <div className="flex items-center justify-center w-16 h-16 rounded-full bg-white/20 mx-auto mb-6 transform transition-all duration-300 hover:scale-110 hover:rotate-6">
                     <Icon className="h-8 w-8" />
-                  </motion.div>
+                  </div>
                   <h3 className="text-2xl md:text-4xl font-bold mb-4">{title}</h3>
                   <p className="text-md md:text-lg leading-relaxed max-w-2xl mx-auto text-white/90">
                     {description}
@@ -157,7 +129,7 @@ export default function GospelSection() {
                 </CardContent>
               </Card>
             ))}
-        </motion.div>
+        </div>
       </div>
     </section>
   );
