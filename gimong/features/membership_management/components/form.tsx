@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import { UsersIcon } from "lucide-react";
 import {
   Card,
   CardHeader,
