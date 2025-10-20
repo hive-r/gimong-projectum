@@ -1,7 +1,5 @@
 // app/layout.tsx
 import type { Metadata } from "next";
-import { Roboto_Condensed } from "next/font/google";
-import "./globals.css";
 import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
