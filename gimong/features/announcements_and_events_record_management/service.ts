@@ -18,9 +18,9 @@ const EVENTS_COLLECTION = "events";
 /**
  * Utility to strip out undefined values (Firestore does not allow them).
  */
-function removeUndefined<T extends Record<string, any>>(obj: T): T {
+function removeUndefined<T extends object>(obj: T): T { // FIXED TYPE CONSTRAINT
   return Object.fromEntries(
-    Object.entries(obj).filter(([_, v]) => v !== undefined)
+    Object.entries(obj).filter(([, v]) => v !== undefined) // FIXED FILTER LOGIC
   ) as T;
 }
 
@@ -76,7 +76,6 @@ export function listenToAnnouncements(
   return listenToCollection<AnnouncementRecord>(
     ANNOUNCEMENTS_COLLECTION,
     (docs) => {
-      // Strip undefined just in case Firestore snapshot returns incomplete data
       callback(docs.map((doc) => removeUndefined(doc)));
     }
   );
@@ -122,7 +121,6 @@ export async function updateEvent(
     dateUpdated: new Date().toISOString(),
   };
 
-  // Recompute status if dates/times change
   if (data.startDate || data.startTime || data.endDate || data.endTime) {
     const status = computeEventStatus(
       data.startDate ?? "",
@@ -202,9 +200,6 @@ export async function deleteEvent(id: string): Promise<void> {
   return deleteDocument(EVENTS_COLLECTION, id);
 }
 
-/**
- * Real-time listener for events that auto-updates status and archiving.
- */
 export function listenToEvents(
   callback: (docs: EventRecord[]) => void
 ): () => void {
@@ -222,16 +217,13 @@ export function listenToEvents(
 
           const updateData: Partial<EventRecord> = {};
 
-          // Only update status if it changed
           if (newStatus !== event.status) updateData.status = newStatus;
 
-          // Only auto-archive if event is past AND NOT manually unarchived
           if (newStatus === "past" && event.isArchived === false) {
             updateData.isArchived = true;
             updateData.dateArchived = new Date().toISOString();
           }
 
-          // Update Firestore if anything changed
           if (Object.keys(updateData).length > 0) {
             await updateEvent(event.id, updateData);
           }
@@ -247,8 +239,9 @@ export function listenToEvents(
     }
   );
 }
+
 //
-// ─── PINNING (Global: only 1 announcement OR event can be pinned) ─────────────
+// ─── PINNING ─────────────────────────────────────────────────────────
 //
 
 export async function togglePinRecord(
@@ -257,10 +250,9 @@ export async function togglePinRecord(
   isPinned: boolean
 ): Promise<void> {
   if (isPinned) {
-    // Unpin ALL announcements and events first
     const [announcements, events] = await Promise.all([
-      getAllDocuments<any>(ANNOUNCEMENTS_COLLECTION),
-      getAllDocuments<any>(EVENTS_COLLECTION),
+      getAllDocuments<AnnouncementRecord>(ANNOUNCEMENTS_COLLECTION),
+      getAllDocuments<EventRecord>(EVENTS_COLLECTION),
     ]);
 
     const unpins = [
@@ -279,7 +271,6 @@ export async function togglePinRecord(
     await Promise.all(unpins);
   }
 
-  // Apply pin state to the selected record
   await updateDocument(collectionName, id, { isPinned });
 }
 
@@ -291,16 +282,13 @@ export async function toggleArchiveRecord(
   id: string,
   isArchived: boolean
 ): Promise<void> {
-  const updateData: Record<string, any> = { isArchived };
+  const updateData: Record<string, unknown> = { isArchived };
 
   if (isArchived) {
-    // When archiving → set dateArchived
     updateData.dateArchived = new Date().toISOString();
   } else {
-    // When unarchiving → remove dateArchived correctly
     updateData.dateArchived = deleteField();
   }
 
-  // Don't strip deleteField with removeUndefined
   await updateDocument(collectionName, id, updateData);
 }

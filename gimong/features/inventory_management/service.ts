@@ -7,7 +7,7 @@ import {
   listenToCollection,
 } from "@/services/firebase/utils";
 
-import { InventoryItem, InventoryFormData } from "./types";
+import { InventoryItem } from "./types"; // FIX: Removed unused InventoryFormData
 import { deleteField } from "firebase/firestore";
 
 const INVENTORY_COLLECTION = "inventory";
@@ -15,9 +15,9 @@ const INVENTORY_COLLECTION = "inventory";
 /**
  * Utility to strip out undefined values (Firestore does not allow them).
  */
-function removeUndefined<T extends Record<string, any>>(obj: T): T {
+function removeUndefined<T extends object>(obj: T): T { // FIX: Changed 'any' to 'object'
   return Object.fromEntries(
-    Object.entries(obj).filter(([_, v]) => v !== undefined)
+    Object.entries(obj).filter(([v]) => v !== undefined)
   ) as T;
 }
 
@@ -102,7 +102,7 @@ export async function toggleArchiveInventoryItem(
   id: string,
   isArchived: boolean
 ): Promise<void> {
-  const updateData: Record<string, any> = { isArchived };
+  const updateData: Record<string, unknown> = { isArchived }; // FIX: Changed 'any' to 'unknown'
 
   if (isArchived) {
     updateData.dateArchived = new Date().toISOString();
@@ -110,5 +110,6 @@ export async function toggleArchiveInventoryItem(
     updateData.dateArchived = deleteField();
   }
 
-  await updateInventoryItem(id, removeUndefined(updateData));
+  // NOTE: Asserting the type to satisfy updateInventoryItem's signature
+  await updateInventoryItem(id, updateData as Partial<InventoryItem>);
 }

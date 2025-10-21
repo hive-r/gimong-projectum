@@ -39,14 +39,15 @@ export default function MediaAdminPage() {
 
   // 🔒 Logout function
   const handleLogout = async () => {
-    try {
-      await signOut(auth);
-      toast.success("Logged out successfully!");
-      router.push("/login");
-    } catch (error) {
-      toast.error("Logout failed. Please try again.");
-    }
-  };
+      try {
+        await signOut(auth);
+        toast.success("You’ve successfully logged out."); // ✅ success toast
+        router.push("/login");
+      } catch (error) {
+        console.error("Error signing out:", error);
+        toast.error("Failed to log out. Please try again."); // ❌ error toast
+      }
+    };
 
   const navItems: { name: string; tab: Tab; icon: React.ElementType }[] = [
     { name: "Dashboard", tab: "dashboard", icon: HomeIcon },

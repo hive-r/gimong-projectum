@@ -20,6 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import Image from "next/image";
 
 type FormInput = {
   recordId: string;
@@ -40,7 +41,7 @@ export const NonMonetaryReportForm: React.FC = () => {
       recordId: "",
       description: "",
       submittedBy: "",
-      files: undefined as any,
+      files: undefined,
     },
   });
 
@@ -50,16 +51,16 @@ export const NonMonetaryReportForm: React.FC = () => {
 
   // ─── Listen to Non-Monetary Records ───────────────────────────────
   // ─── Listen to Non-Monetary Records ───────────────────────────────
-    React.useEffect(() => {
+  React.useEffect(() => {
     const unsub = listenToNonMonetaryRecords((records) => {
-        // Only include records that are not archived AND have status "pending"
-        const available = records.filter(
+      // Only include records that are not archived AND have status "pending"
+      const available = records.filter(
         (r) => !r.isArchived && r.status === "pending"
-        );
-        setRecords(available);
+      );
+      setRecords(available);
     });
     return () => unsub();
-    }, []);
+  }, []);
 
   // ─── File Preview ────────────────────────────────────────────
   const handleFilePreview = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -105,7 +106,7 @@ export const NonMonetaryReportForm: React.FC = () => {
         description: data.description,
         submittedBy: data.submittedBy,
         files: uploadedUrls,
-        isArchived: false, id: "" ,
+        isArchived: false, id: "",
       });
 
       toast.success("Non-monetary report submitted successfully!");
@@ -191,9 +192,11 @@ export const NonMonetaryReportForm: React.FC = () => {
           <div className="grid grid-cols-3 gap-3 mt-3">
             {previewUrls.map((url, i) => (
               <div key={i} className="border rounded-lg overflow-hidden relative group">
-                <img
+                <Image
                   src={url}
                   alt={`Preview ${i + 1}`}
+                  width={200}
+                  height={128}
                   className="object-cover w-full h-32 group-hover:opacity-80 transition"
                 />
               </div>
@@ -218,8 +221,8 @@ export const NonMonetaryReportForm: React.FC = () => {
         {uploading
           ? "Uploading files..."
           : isSubmitting
-          ? "Submitting..."
-          : "Submit Non-Monetary Report"}
+            ? "Submitting..."
+            : "Submit Non-Monetary Report"}
       </Button>
     </form>
   );

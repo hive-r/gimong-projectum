@@ -39,7 +39,6 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import { toast } from "sonner";
 
 import { MembershipProfile } from "../types";
 import { listenToMemberships } from "../service";

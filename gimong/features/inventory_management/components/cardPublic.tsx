@@ -42,10 +42,10 @@ export const SermonDevotionalCardPublic: React.FC = () => {
           align="center"
         />
         <p className="text-gray-600 max-w-2xl mx-auto mt-4 leading-relaxed">
-          Deepen your understanding of God's Word through inspiring sermons and
-          heartfelt devotionals. Listen, reflect, and grow in your daily walk
-          with Christ.
-        </p>
+        Deepen your understanding of God&apos;s Word through inspiring sermons and
+        heartfelt devotionals. Listen, reflect, and grow in your daily walk
+        with Christ.
+      </p>
       </div>
 
       <div className="space-y-20 max-w-6xl mx-auto relative z-10">

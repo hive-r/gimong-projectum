@@ -29,6 +29,7 @@ export const AnnouncementEventStatistics: React.FC = () => {
   const [announcements, setAnnouncements] = useState<AnnouncementRecord[]>([]);
   const [events, setEvents] = useState<EventRecord[]>([]);
 
+  // Fetch data
   useEffect(() => {
     const unsubA = listenToAnnouncements(setAnnouncements);
     const unsubE = listenToEvents(setEvents);
@@ -38,8 +39,12 @@ export const AnnouncementEventStatistics: React.FC = () => {
     };
   }, []);
 
-  const activeAnnouncements = announcements.filter((a) => !a.isArchived);
-  const activeEvents = events.filter((e) => !e.isArchived);
+  // Filter active records
+  const activeAnnouncements = useMemo(
+    () => announcements.filter((a) => !a.isArchived),
+    [announcements]
+  );
+  const activeEvents = useMemo(() => events.filter((e) => !e.isArchived), [events]);
 
   const totalAnnouncements = activeAnnouncements.length;
   const totalEvents = activeEvents.length;
@@ -47,9 +52,13 @@ export const AnnouncementEventStatistics: React.FC = () => {
   const themeColor = "hsl(180, 61%, 20%)";
   const themeColor1 = "hsl(178, 69%, 22%)";
 
-  const today = new Date();
-  const upcomingDays = Array.from({ length: 8 }, (_, i) => addDays(today, i));
+  // Stable today object
+  const today = useMemo(() => new Date(), []);
 
+  // Upcoming 8 days
+  const upcomingDays = useMemo(() => Array.from({ length: 8 }, (_, i) => addDays(today, i)), [today]);
+
+  // Upcoming 8 days data
   const upcomingData = useMemo(() => {
     return upcomingDays.map((day) => {
       const dayStart = new Date(day.setHours(0, 0, 0, 0));
@@ -72,9 +81,9 @@ export const AnnouncementEventStatistics: React.FC = () => {
         Events: eventCount,
       };
     });
-  }, [activeAnnouncements, activeEvents]);
+  }, [activeAnnouncements, activeEvents, upcomingDays]);
 
-  // Weekly events data
+  // Weekly events data for current month
   const weeklyData = useMemo(() => {
     const startMonth = startOfMonth(today);
     const endMonth = endOfMonth(today);

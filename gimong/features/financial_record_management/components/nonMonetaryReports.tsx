@@ -30,21 +30,27 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-import { NonMonetaryRecord } from "../types/nonMonetary";
-import { listenToNonMonetaryRecords } from "../service";
+import { NonMonetaryRecord, NonMonetaryReport } from "../types/nonMonetary";
+import { listenToNonMonetaryRecords, listenToNonMonetaryReports } from "../service";
+import Image from "next/image";
 
 export const NonMonetaryList: React.FC = () => {
   const [records, setRecords] = useState<NonMonetaryRecord[]>([]);
+  const [reports, setReports] = useState<NonMonetaryReport[]>([]);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewFiles, setPreviewFiles] = useState<string[]>([]);
 
-  // ─── Fetch Non-Monetary Records from Firestore ────────────────
+  // ─── Fetch Non-Monetary Records and Reports ────────────────
   useEffect(() => {
-    const unsubscribe = listenToNonMonetaryRecords(setRecords);
-    return () => unsubscribe();
+    const unsubscribeRecords = listenToNonMonetaryRecords(setRecords);
+    const unsubscribeReports = listenToNonMonetaryReports(setReports);
+    return () => {
+      unsubscribeRecords();
+      unsubscribeReports();
+    };
   }, []);
 
-  // ─── Separate Pending and Reported ─────────────────────────────
+  // ─── Separate Pending and Reported ─────────────────────────
   const pendingRecords = records.filter(
     (r) => r.status === "pending" && !r.isArchived
   );
@@ -150,6 +156,7 @@ export const NonMonetaryList: React.FC = () => {
                       <TableRow>
                         <TableHead>Contributor</TableHead>
                         <TableHead>Description</TableHead>
+                        <TableHead>Files</TableHead>
                         <TableHead>Donation Type</TableHead>
                         <TableHead>Destination</TableHead>
                         <TableHead>Status</TableHead>
@@ -157,22 +164,39 @@ export const NonMonetaryList: React.FC = () => {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {reportedRecords.map((record) => (
-                        <TableRow key={record.id}>
-                          <TableCell>{record.fullName}</TableCell>
-                          <TableCell>{record.description}</TableCell>
-                          <TableCell>{toDisplay(record)}</TableCell>
-                          <TableCell>{toDestination(record)}</TableCell>
-                          <TableCell className="text-green-600 font-medium">
-                            Reported
-                          </TableCell>
-                          <TableCell>
-                            {record.dateCreated
-                              ? new Date(record.dateCreated).toLocaleDateString()
-                              : "-"}
-                          </TableCell>
-                        </TableRow>
-                      ))}
+                      {reportedRecords.map((record) => {
+                        // Find the report associated with this record
+                        const report = reports.find((r) => r.recordId === record.id);
+
+                        return (
+                          <TableRow key={record.id}>
+                            <TableCell>{record.fullName}</TableCell>
+                            <TableCell>{record.description}</TableCell>
+                            <TableCell>
+                              {report?.files && report.files.length > 0 ? (
+                                <button
+                                  className="text-blue-600 underline"
+                                  onClick={() => handlePreview(report.files)}
+                                >
+                                  View ({report.files.length})
+                                </button>
+                              ) : (
+                                "-"
+                              )}
+                            </TableCell>
+                            <TableCell>{toDisplay(record)}</TableCell>
+                            <TableCell>{toDestination(record)}</TableCell>
+                            <TableCell className="text-green-600 font-medium">
+                              Reported
+                            </TableCell>
+                            <TableCell>
+                              {record.dateCreated
+                                ? new Date(record.dateCreated).toLocaleDateString()
+                                : "-"}
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
                     </TableBody>
                   </Table>
                 ) : (
@@ -186,7 +210,7 @@ export const NonMonetaryList: React.FC = () => {
         </Tabs>
       </div>
 
-      {/* ─── Preview Dialog (Optional future use) ───────────────── */}
+      {/* ─── Preview Dialog ───────────────── */}
       <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
         <DialogContent className="sm:max-w-3xl">
           <DialogHeader>
@@ -194,10 +218,12 @@ export const NonMonetaryList: React.FC = () => {
           </DialogHeader>
           <div className="grid grid-cols-3 gap-3 mt-4">
             {previewFiles.map((url, i) => (
-              <img
+              <Image
                 key={i}
                 src={url}
                 alt={`Preview ${i + 1}`}
+                width={200} // adjust as needed
+                height={128} // adjust as needed
                 className="object-cover w-full h-32 rounded-lg"
               />
             ))}

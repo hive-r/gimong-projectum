@@ -52,14 +52,6 @@ export const MembershipStatistics: React.FC = () => {
   ).length;
   const totalArchived = members.filter((m) => m.isArchived).length;
 
-  const membersByStatus = useMemo(() => {
-    return [
-      { name: "Active", value: totalActive },
-      { name: "Inactive", value: totalInactive },
-      { name: "Archived", value: totalArchived },
-    ];
-  }, [totalActive, totalInactive, totalArchived]);
-
   // Marital Status
   const maritalStatusData = useMemo(() => {
     const counts: Record<string, number> = {};

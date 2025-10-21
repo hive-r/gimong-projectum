@@ -12,6 +12,7 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import { computeEventStatus } from "../utils/computeEventStatus";
+import Image from "next/image";
 
 export const IsPinnedCard: React.FC = () => {
   const [announcements, setAnnouncements] = useState<AnnouncementRecord[]>([]);
@@ -77,10 +78,13 @@ export const IsPinnedCard: React.FC = () => {
             {/* Image */}
             <div className="w-full max-h-[350px] aspect-[16/9] overflow-hidden">
               {pinnedRecord.imageUrl ? (
-                <img
+                <Image
                   src={pinnedRecord.imageUrl}
                   alt={pinnedRecord.title}
+                  width={1600} // optional: set max width
+                  height={900} // optional: set max height
                   className="w-full h-full object-cover"
+                  priority={true} // optional: if pinned image should load fast
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center border border-dashed text-gray-400">
@@ -109,7 +113,7 @@ export const IsPinnedCard: React.FC = () => {
             {/* Description */}
             <CardDescription className="text-base max-w-3xl">
               {pinnedRecord.description}
-            </CardDescription> 
+            </CardDescription>
           </CardContent>
         </Card>
       </div>

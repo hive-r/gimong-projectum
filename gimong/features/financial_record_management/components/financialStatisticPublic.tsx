@@ -28,6 +28,11 @@ import {
 } from "recharts";
 import SectionHeader from "@/modules/components/sectionHeader";
 
+type ChartData = {
+  name: string;
+  value: number;
+};
+
 export const FinancialStatisticsPublic: React.FC = () => {
   const [monetaryRecords, setMonetaryRecords] = useState<MonetaryRecord[]>([]);
   const [nonMonetaryRecords, setNonMonetaryRecords] = useState<NonMonetaryRecord[]>([]);
@@ -58,7 +63,7 @@ export const FinancialStatisticsPublic: React.FC = () => {
   const totalNonMonetary = nonMonetaryRecords.filter((r) => !r.isArchived).length;
 
   // Monetary by Type
-  const monetaryByType = useMemo(() => {
+  const monetaryByType: ChartData[] = useMemo(() => {
     const grouped: Record<string, number> = {};
     monetaryRecords
       .filter((r) => !r.isArchived && typeof r.amount === "number")
@@ -69,7 +74,7 @@ export const FinancialStatisticsPublic: React.FC = () => {
   }, [monetaryRecords]);
 
   // Net Donations by Type (donations - cashouts)
-  const netDonationsByType = useMemo(() => {
+  const netDonationsByType: ChartData[] = useMemo(() => {
     const donationMap: Record<string, number> = {};
     monetaryRecords
       .filter((r) => !r.isArchived && typeof r.amount === "number")
@@ -89,7 +94,7 @@ export const FinancialStatisticsPublic: React.FC = () => {
   }, [monetaryRecords, cashouts]);
 
   // Cashouts by Source
-  const cashoutsBySource = useMemo(() => {
+  const cashoutsBySource: ChartData[] = useMemo(() => {
     const grouped: Record<string, number> = {};
     cashouts.forEach((c) => {
       grouped[c.sourceFund] = (grouped[c.sourceFund] || 0) + (c.amount || 0);
@@ -175,17 +180,18 @@ export const FinancialStatisticsPublic: React.FC = () => {
             <BarChart data={monetaryByType} margin={{ top: 10, right: 30, left: 10, bottom: 20 }}>
               <XAxis dataKey="name" tick={{ fill: "#4b5563", fontSize: 12 }} />
               <YAxis tickFormatter={(v) => `₱${v.toLocaleString("en-PH")}`} tick={{ fill: "#4b5563", fontSize: 12 }} />
-              <Tooltip formatter={(v: number) => `₱${v.toLocaleString("en-PH", { minimumFractionDigits: 2 })}`} />
+              <Tooltip formatter={(value: number) => `₱${value.toLocaleString("en-PH", { minimumFractionDigits: 2 })}`} />
               <Bar dataKey="value" fill={primaryColor} radius={[8, 8, 0, 0]}>
                 <LabelList
                   dataKey="value"
                   position="top"
                   formatter={(label: React.ReactNode) => {
-                    const value = typeof label === "number" ? label : Number(label as any) || 0;
+                    const value = typeof label === "number" ? label : Number(label) || 0;
                     return `₱${value.toLocaleString("en-PH", { maximumFractionDigits: 0 })}`;
                   }}
                   style={{ fill: "#1f2937", fontSize: 12 }}
                 />
+
               </Bar>
             </BarChart>
           </ResponsiveContainer>
@@ -208,7 +214,7 @@ export const FinancialStatisticsPublic: React.FC = () => {
               <XAxis dataKey="name" tick={{ fill: "#4b5563", fontSize: 12 }} />
               <YAxis tickFormatter={(v) => `₱${v.toLocaleString("en-PH")}`} tick={{ fill: "#4b5563", fontSize: 12 }} />
               <Tooltip
-                content={({ active, payload }) => {
+                content={({ active, payload }: { active?: boolean; payload?: { payload: ChartData }[] }) => {
                   if (active && payload && payload.length) {
                     const { name, value } = payload[0].payload;
                     const original = monetaryByType.find(d => d.name === name)?.value || 0;
@@ -228,62 +234,63 @@ export const FinancialStatisticsPublic: React.FC = () => {
                   dataKey="value"
                   position="top"
                   formatter={(label: React.ReactNode) => {
-                    const value = typeof label === "number" ? label : Number(label as any) || 0;
+                    const value = typeof label === "number" ? label : Number(label) || 0;
                     return `₱${value.toLocaleString("en-PH", { maximumFractionDigits: 0 })}`;
                   }}
                   style={{ fill: "#1f2937", fontSize: 12 }}
                 />
+
               </Bar>
             </BarChart>
           </ResponsiveContainer>
         </CardContent>
       </Card>
-      
-      {/* 3️⃣ Cashouts by Source Fund */}
-<Card className="mt-16 max-w-5xl mx-auto shadow-lg border-none bg-white/90 backdrop-blur-sm rounded-2xl hover:shadow-xl transition-all duration-300">
-  <CardHeader className="text-center border-b border-gray-100 py-6 bg-gradient-to-r from-primary/5 to-transparent">
-    <CardTitle className="text-2xl font-semibold text-gray-800">
-      Cashouts by Source Fund
-    </CardTitle>
-    <CardDescription className="text-gray-500">
-      Distribution of cashouts based on each source fund.
-    </CardDescription>
-  </CardHeader>
-  <CardContent className="pt-8 pb-12">
-    <ResponsiveContainer width="100%" height={320}>
-      <BarChart data={cashoutsBySource} margin={{ top: 10, right: 30, left: 10, bottom: 20 }}>
-        <XAxis dataKey="name" tick={{ fill: "#4b5563", fontSize: 12 }} />
-        <YAxis tickFormatter={(v) => `₱${v.toLocaleString("en-PH")}`} tick={{ fill: "#4b5563", fontSize: 12 }} />
-        <Tooltip
-          content={({ active, payload }) => {
-            if (active && payload && payload.length) {
-              const { name, value } = payload[0].payload;
-              return (
-                <div className="bg-white p-2 border rounded shadow">
-                  <p className="font-bold">{name}</p>
-                  <p>Cashout: ₱{Number(value).toLocaleString("en-PH")}</p>
-                </div>
-              );
-            }
-            return null;
-          }}
-        />
-        <Bar dataKey="value" fill={primaryColor} radius={[8, 8, 0, 0]}>
-          <LabelList
-            dataKey="value"
-            position="top"
-            formatter={(label: React.ReactNode) => {
-              const value = typeof label === "number" ? label : Number(label as any) || 0;
-              return `₱${value.toLocaleString("en-PH", { maximumFractionDigits: 0 })}`;
-            }}
-            style={{ fill: "#1f2937", fontSize: 12 }}
-          />
-        </Bar>
-      </BarChart>
-    </ResponsiveContainer>
-  </CardContent>
-</Card>
 
+      {/* 3️⃣ Cashouts by Source Fund */}
+      <Card className="mt-16 max-w-5xl mx-auto shadow-lg border-none bg-white/90 backdrop-blur-sm rounded-2xl hover:shadow-xl transition-all duration-300">
+        <CardHeader className="text-center border-b border-gray-100 py-6 bg-gradient-to-r from-primary/5 to-transparent">
+          <CardTitle className="text-2xl font-semibold text-gray-800">
+            Cashouts by Source Fund
+          </CardTitle>
+          <CardDescription className="text-gray-500">
+            Distribution of cashouts based on each source fund.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="pt-8 pb-12">
+          <ResponsiveContainer width="100%" height={320}>
+            <BarChart data={cashoutsBySource} margin={{ top: 10, right: 30, left: 10, bottom: 20 }}>
+              <XAxis dataKey="name" tick={{ fill: "#4b5563", fontSize: 12 }} />
+              <YAxis tickFormatter={(v) => `₱${v.toLocaleString("en-PH")}`} tick={{ fill: "#4b5563", fontSize: 12 }} />
+              <Tooltip
+                content={({ active, payload }: { active?: boolean; payload?: { payload: ChartData }[] }) => {
+                  if (active && payload && payload.length) {
+                    const { name, value } = payload[0].payload;
+                    return (
+                      <div className="bg-white p-2 border rounded shadow">
+                        <p className="font-bold">{name}</p>
+                        <p>Cashout: ₱{value.toLocaleString("en-PH")}</p>
+                      </div>
+                    );
+                  }
+                  return null;
+                }}
+              />
+              <Bar dataKey="value" fill={primaryColor} radius={[8, 8, 0, 0]}>
+                <LabelList
+                  dataKey="value"
+                  position="top"
+                  formatter={(label: React.ReactNode) => {
+                    const value = typeof label === "number" ? label : Number(label) || 0;
+                    return `₱${value.toLocaleString("en-PH", { maximumFractionDigits: 0 })}`;
+                  }}
+                  style={{ fill: "#1f2937", fontSize: 12 }}
+                />
+
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </CardContent>
+      </Card>
     </section>
   );
 };

@@ -66,7 +66,7 @@ import { AnnouncementEdit } from "./announcementEdit";
 import { EventEdit } from "./eventEdit";
 import { EventCard } from "./eventCard";
 import { AnnouncementCard } from "./announcementCard";
-
+import Image from "next/image";
 import { toast } from "sonner";
 
 type SelectedMode = "edit" | "view" | null;
@@ -496,16 +496,20 @@ export const AnnouncementEventList: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch h-full">
               <div className="w-full h-[350px] flex justify-center items-center">
                 {selectedRecord.imageUrl ? (
-                  <img
+                  <Image
                     src={selectedRecord.imageUrl}
                     alt="Event"
+                    width={700} // desired width
+                    height={350} // desired height
                     className="w-full h-full object-cover rounded-md shadow-md"
+                    priority={true} // optional: for faster loading of pinned/important images
                   />
                 ) : (
                   <div className="w-full h-[350px] flex items-center justify-center border border-dashed text-gray-400">
                     No Image
                   </div>
                 )}
+
               </div>
               <div className="h-full">
                 <EventCard event={selectedRecord as EventRecord} />

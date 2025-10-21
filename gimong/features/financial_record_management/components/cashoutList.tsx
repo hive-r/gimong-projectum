@@ -8,6 +8,7 @@ import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { CashoutRecord, CashoutReport } from "../types/cashout";
 import { listenToCashoutRecords, listenToCashoutReports } from "../service";
+import Image from "next/image";
 
 export const CashoutList: React.FC = () => {
   const [cashouts, setCashouts] = useState<CashoutRecord[]>([]);
@@ -64,7 +65,7 @@ export const CashoutList: React.FC = () => {
             <Card>
               <CardHeader>
                 <CardTitle className="text-2xl uppercase">Pending Cashouts</CardTitle>
-                <CardDescription>Cashouts with status "pending".</CardDescription>
+                <CardDescription>Cashouts with status &quot;pending&quot;.</CardDescription>
               </CardHeader>
               <CardContent>
                 {pendingCashouts.length > 0 ? (
@@ -167,10 +168,12 @@ export const CashoutList: React.FC = () => {
           </DialogHeader>
           <div className="grid grid-cols-3 gap-3 mt-4">
             {previewFiles.map((url, i) => (
-              <img
+              <Image
                 key={i}
                 src={url}
                 alt={`Preview ${i + 1}`}
+                width={200} // adjust as needed
+                height={128} // adjust as needed
                 className="object-cover w-full h-32 rounded-lg"
               />
             ))}

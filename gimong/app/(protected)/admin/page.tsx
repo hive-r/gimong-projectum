@@ -37,14 +37,15 @@ type Tab = "dashboard" | "event" | "finance" | "member" | "inventory";
 export default function AdminPage() {
   const [activeTab, setActiveTab] = useState<Tab>("dashboard");
   const router = useRouter();
-
+  
   const handleLogout = async () => {
     try {
       await signOut(auth);
-      toast.success("Successfully logged out!");
+      toast.success("You’ve successfully logged out."); // ✅ success toast
       router.push("/login");
     } catch (error) {
-      toast.error("Logout failed. Please try again.");
+      console.error("Error signing out:", error);
+      toast.error("Failed to log out. Please try again."); // ❌ error toast
     }
   };
 

@@ -20,6 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import Image from "next/image";
 
 type FormInput = {
   cashoutId: string;
@@ -40,7 +41,7 @@ export const CashoutReportForm: React.FC = () => {
       cashoutId: "",
       description: "",
       submittedBy: "",
-      files: undefined as any,
+      files: undefined,
     },
   });
 
@@ -145,7 +146,7 @@ export const CashoutReportForm: React.FC = () => {
                       </SelectItem>
                     ))
                   ) : (
-                    <SelectItem disabled value="">
+                    <SelectItem disabled value="none">
                       No pending cashout records available
                     </SelectItem>
                   )}
@@ -188,17 +189,16 @@ export const CashoutReportForm: React.FC = () => {
         {previewUrls.length > 0 && (
           <div className="grid grid-cols-3 gap-3 mt-3">
             {previewUrls.map((url, i) => (
-              <div
-                key={i}
-                className="border rounded-lg overflow-hidden relative group"
-              >
-                <img
-                  src={url}
-                  alt={`Preview ${i + 1}`}
-                  className="object-cover w-full h-32 group-hover:opacity-80 transition"
-                />
-              </div>
-            ))}
+  <div key={i} className="border rounded-lg overflow-hidden relative group">
+    <Image
+      src={url}
+      alt={`Preview ${i + 1}`}
+      width={200} // adjust width as needed
+      height={128} // adjust height as needed
+      className="object-cover w-full h-32 group-hover:opacity-80 transition"
+    />
+  </div>
+))}
           </div>
         )}
       </div>

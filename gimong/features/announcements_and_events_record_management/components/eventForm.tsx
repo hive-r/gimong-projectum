@@ -41,7 +41,6 @@ export const EventForm: React.FC = () => {
 
   const today = new Date();
   const [startDate, setStartDate] = React.useState<Date>();
-  const [endDate, setEndDate] = React.useState<Date>();
 
   const watchedStartDate = watch("startDate");
   const watchedStartTime = watch("startTime");
@@ -58,7 +57,6 @@ export const EventForm: React.FC = () => {
       toast.success("Event created successfully!");
       reset();
       setStartDate(undefined);
-      setEndDate(undefined);
     } catch (err) {
       console.error(err);
       toast.error("Failed to create event.");
@@ -253,7 +251,6 @@ export const EventForm: React.FC = () => {
                       onSelect={(date) => {
                         if (!date) {
                           field.onChange("");
-                          setEndDate(undefined);
                           return;
                         }
                         if (date < today) {
@@ -265,7 +262,6 @@ export const EventForm: React.FC = () => {
                           return;
                         }
                         field.onChange(format(date, "yyyy-MM-dd"));
-                        setEndDate(date);
                       }}
                       disabled={(date) =>
                         date < today || (startDate ? date < startDate : false)

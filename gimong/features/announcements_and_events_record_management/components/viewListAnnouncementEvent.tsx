@@ -48,7 +48,8 @@ import { AnnouncementRecord } from "../types/announcement";
 import { EventRecord } from "../types/event";
 import { EventCard } from "./eventCard";
 import { AnnouncementCard } from "./announcementCard";
-import { toast } from "sonner";
+
+import Image from "next/image";
 
 type SelectedMode = "view" | null;
 
@@ -70,10 +71,6 @@ export const ViewListAnnouncementEvent: React.FC = () => {
     const unsubscribe = listenToEvents(setEvents);
     return () => unsubscribe();
   }, []);
-
-  function capitalize(text: string) {
-    return text.charAt(0).toUpperCase() + text.slice(1);
-  }
 
   // 🔹 Only View in Actions menu
   const renderActions = (record: AnnouncementRecord | EventRecord) => (
@@ -308,10 +305,12 @@ export const ViewListAnnouncementEvent: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch h-full">
               <div className="w-full h-[350px] flex justify-center items-center">
                 {selectedRecord.imageUrl ? (
-                  <img
+                  <Image
                     src={selectedRecord.imageUrl}
                     alt="Event"
-                    className="w-full h-full object-cover rounded-md shadow-md"
+                    width={700} // or your desired width
+                    height={350} // or your desired height
+                    className="object-cover rounded-md shadow-md"
                   />
                 ) : (
                   <div className="w-full h-[350px] flex items-center justify-center border border-dashed text-gray-400">

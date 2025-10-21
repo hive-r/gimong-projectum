@@ -15,9 +15,9 @@ const MEMBERSHIP_COLLECTION = "memberships";
 /**
  * Utility to remove undefined fields before writing to Firestore.
  */
-function removeUndefined<T extends Record<string, any>>(obj: T): T {
+function removeUndefined<T extends object>(obj: T): T { // FIXED: T extends object
   return Object.fromEntries(
-    Object.entries(obj).filter(([_, v]) => v !== undefined)
+    Object.entries(obj).filter(([v]) => v !== undefined)
   ) as T;
 }
 
@@ -88,7 +88,7 @@ export async function toggleArchiveMembership(
   id: string,
   isArchived: boolean
 ): Promise<void> {
-  const updateData: Record<string, any> = { isArchived };
+  const updateData: Record<string, unknown> = { isArchived }; // FIXED: Changed 'any' to 'unknown'
 
   if (isArchived) {
     updateData.dateArchived = new Date().toISOString();
@@ -96,7 +96,12 @@ export async function toggleArchiveMembership(
     updateData.dateArchived = deleteField();
   }
 
-  await updateDocument(MEMBERSHIP_COLLECTION, id, removeUndefined(updateData));
+  // Casting to Partial<MembershipProfile> to satisfy the signature of updateDocument
+  await updateDocument(
+    MEMBERSHIP_COLLECTION, 
+    id, 
+    removeUndefined(updateData as Partial<MembershipProfile>)
+  );
 }
 
 //

@@ -33,16 +33,6 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogCancel,
-  AlertDialogAction,
-} from "@/components/ui/alert-dialog";
-import {
   Dialog,
   DialogContent,
   DialogHeader,
@@ -56,8 +46,6 @@ import { MonetaryRecord } from "../types/monetary";
 import {
   listenToMonetaryRecords,
   listenToNonMonetaryRecords,
-  deleteMonetaryRecord,
-  deleteNonMonetaryRecord,
   toggleArchiveRecord,
 } from "../service";
 import { MonetaryEdit } from "./monetaryEdit";
@@ -73,8 +61,6 @@ export const MonetaryNonMonetaryList: React.FC = () => {
   const [selectedRecord, setSelectedRecord] = useState<RecordType | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mode, setMode] = useState<SelectedMode>("edit");
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [recordToDelete, setRecordToDelete] = useState<RecordType | null>(null);
 
   useEffect(() => listenToMonetaryRecords(setMonetaryRecords), []);
   useEffect(() => listenToNonMonetaryRecords(setNonMonetaryRecords), []);
@@ -100,26 +86,6 @@ export const MonetaryNonMonetaryList: React.FC = () => {
     } catch (err) {
       console.error(err);
       toast.error(`Failed to ${action} record.`);
-    }
-  };
-
-  const confirmDelete = async () => {
-    if (!recordToDelete) return;
-    try {
-      if ("amount" in recordToDelete) {
-        await deleteMonetaryRecord(recordToDelete.id);
-        setMonetaryRecords((prev) => prev.filter((r) => r.id !== recordToDelete.id));
-      } else {
-        await deleteNonMonetaryRecord(recordToDelete.id);
-        setNonMonetaryRecords((prev) => prev.filter((r) => r.id !== recordToDelete.id));
-      }
-      toast.success("Record deleted successfully!");
-    } catch (err) {
-      console.error(err);
-      toast.error("Failed to delete record.");
-    } finally {
-      setDeleteDialogOpen(false);
-      setRecordToDelete(null);
     }
   };
 

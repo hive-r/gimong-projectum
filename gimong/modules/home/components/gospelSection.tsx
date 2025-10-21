@@ -79,7 +79,7 @@ export default function GospelSection() {
       <div className="relative space-y-12 max-w-7xl mx-auto">
         {/* Row 1 */}
         <div className="grid gap-8 md:grid-cols-3">
-          {steps.slice(0, 3).map(({ title, description, verse, icon: Icon }, i) => (
+          {steps.slice(0, 3).map(({ title, description, verse, icon: Icon }) => (
             <div key={title} className="transform transition-all duration-300 hover:-translate-y-1">
               <Card className="bg-white border border-gray-100 shadow-sm hover:shadow-xl text-center p-8 rounded-none">
                 <div className="flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 text-primary mb-5 mx-auto hover:bg-primary hover:text-white transition-all duration-300 shadow-sm">
@@ -95,7 +95,7 @@ export default function GospelSection() {
 
         {/* Row 2 */}
         <div className="grid gap-8 md:grid-cols-2 max-w-4xl mx-auto">
-          {steps.slice(3, 5).map(({ title, description, verse, icon: Icon }, i) => (
+          {steps.slice(3, 5).map(({ title, description, verse, icon: Icon }) => (
             <div key={title} className="transform transition-all duration-300 hover:-translate-y-1">
               <Card className="bg-white border border-gray-100 shadow-sm hover:shadow-xl text-center p-8 rounded-none">
                 <div className="flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 text-primary mb-5 mx-auto hover:bg-primary hover:text-white transition-all duration-300 shadow-sm">

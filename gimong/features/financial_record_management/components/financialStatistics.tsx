@@ -193,10 +193,10 @@ export const FinancialStatistics: React.FC = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-3xl">
               <GiftIcon className="h-8 w-8" color={primaryColor} />
-              Total Non-Monetary Donations
+              Non-Monetary Donations
             </CardTitle>
             <CardDescription>
-              Count of all active non-monetary donations.
+              Count of all non-monetary donations.
             </CardDescription>
           </CardHeader>
           <CardContent>
