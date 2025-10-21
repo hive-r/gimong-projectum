@@ -25,7 +25,7 @@ const values = [
   {
     title: "Integrity",
     description:
-      "We live with **honesty**, **humility**, and **consistency**. Integrity means doing what is **right** — even when no one is watching — and letting our lives be a true reflection of **Christ**. We strive to honor God in every **word** and **action**, building **trust** and **credibility** as His representatives in our homes, workplaces, and communities.",
+      "We live with **honesty**, **humility**, and **consistency**. Integrity means doing what is **right** — even when no one is watching — and letting our lives be a true reflection of **Christ**. We strive to honor God in every **word** and **action**, building **trust** and **credibility** as His representatives in our homes, and communities.",
     image: "https://images.pexels.com/photos/5997003/pexels-photo-5997003.jpeg",
   },
 ];
