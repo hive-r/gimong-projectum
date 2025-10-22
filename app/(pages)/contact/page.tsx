@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import emailjs from "emailjs-com";
+import emailjs from "@emailjs/browser";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import SectionHeader from "@/modules/components/sectionHeader";
@@ -37,13 +37,13 @@ export default function ContactPage() {
       );
 
       if (res.status === 200) {
-        toast.success("✅ Message sent successfully!");
+        toast.success("Message sent successfully!");
         setForm({ name: "", email: "", message: "" });
       } else {
-        toast.error("❌ Something went wrong. Please try again later.");
+        toast.error("Something went wrong. Please try again later.");
       }
     } catch (error) {
-      toast.error("❌ Failed to send message. Please try again later.");
+      toast.error("Failed to send message. Please try again later.");
       console.error("EmailJS Error:", error);
     } finally {
       setLoading(false);
