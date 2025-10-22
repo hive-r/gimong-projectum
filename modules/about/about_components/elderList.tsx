@@ -23,7 +23,7 @@ const elders = [
 
 export default function EldersList() {
   return (
-    <section className="py-20 px-6 md:px-12 lg:px-20 bg-gradient-to-b from-white via-teal-50 to-white">
+    <section className="py-20 px-6 md:px-12 lg:px-20 bg-linear-to-b from-white via-teal-50 to-white">
       <SectionHeader
         subtitle="Church Elders"
         title="Meet Our Elders"

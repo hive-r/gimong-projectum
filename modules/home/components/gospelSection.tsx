@@ -59,9 +59,9 @@ const steps = [
 
 export default function GospelSection() {
   return (
-    <section className="relative py-24 px-6 md:px-12 lg:px-20 bg-gradient-to-b from-white via-gray-50 to-teal-50 overflow-hidden">
+    <section className="relative py-24 px-6 md:px-12 lg:px-20 bg-linear-to-b from-white via-gray-50 to-teal-50 overflow-hidden">
       {/* Background Glow Effect */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent opacity-80 pointer-events-none" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent opacity-80 pointer-events-none" />
 
       {/* Section Header */}
       <div className="relative mb-14">

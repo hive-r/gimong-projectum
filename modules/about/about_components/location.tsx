@@ -5,7 +5,7 @@ import SectionHeader from "@/modules/components/sectionHeader";
 
 export default function Location() {
   return (
-    <section className="py-20 px-6 md:px-12 lg:px-20 bg-gradient-to-b from-white to-teal-50 text-center">
+    <section className="py-20 px-6 md:px-12 lg:px-20 bg-linear-to-b from-white to-teal-50 text-center">
       {/* Section Header */}
       <SectionHeader subtitle="Visit Us" title="Our Church Location" align="center" />
 
@@ -22,7 +22,7 @@ export default function Location() {
         ></iframe>
 
         {/* Overlay gradient for subtle polish */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent pointer-events-none"></div>
+        <div className="absolute inset-0 bg-linear-to-t from-black/10 to-transparent pointer-events-none"></div>
       </div>
 
       {/* Description */}

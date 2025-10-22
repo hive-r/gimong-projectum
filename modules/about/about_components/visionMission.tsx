@@ -2,7 +2,7 @@
 
 export default function VisionMission() {
   return (
-    <section className="py-20 px-6 md:px-12 lg:px-20 bg-gradient-to-b from-white to-teal-50">
+    <section className="py-20 px-6 md:px-12 lg:px-20 bg-linear-to-b from-white to-teal-50">
       <div className="grid md:grid-cols-2 gap-8 max-w-7xl mx-auto items-stretch">
         {/* Mission Card */}
         <div className="group bg-white p-10 shadow-md hover:shadow-xl border border-gray-100 transition-all duration-300">

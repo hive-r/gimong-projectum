@@ -12,7 +12,7 @@ export default function ProfileCard({ imageUrl, name, role }: ProfileCardProps) 
   return (
     <div className="group relative overflow-hidden bg-white shadow-md hover:shadow-xl transition-all duration-500 border border-gray-100 hover:border-primary/30 p-8 text-center">
       {/* Glow Background Effect */}
-      <div className="absolute inset-0 bg-gradient-to-br from-teal-100/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl"></div>
+      <div className="absolute inset-0 bg-linear-to-br from-teal-100/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl"></div>
 
       {/* Avatar */}
       <div className="mt-5 relative w-40 h-40 mx-auto rounded-full overflow-hidden border-4 border-primary/30 shadow-md group-hover:scale-105 transition-transform duration-500">
@@ -35,7 +35,7 @@ export default function ProfileCard({ imageUrl, name, role }: ProfileCardProps) 
           </span>
         </p>
       </div>
-      <div className="mt-5 mb-10 mx-auto w-16 h-[3px] bg-gradient-to-r from-primary to-teal-400 group-hover:w-24 transition-all duration-500"></div>
+      <div className="mt-5 mb-10 mx-auto w-16 h-[3px] bg-linear-to-r from-primary to-teal-400 group-hover:w-24 transition-all duration-500"></div>
     </div>
   );
 }

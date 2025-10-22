@@ -16,7 +16,7 @@ export default function Hero({
   subtitle,
   imageUrl,
   height = "h-[80vh]",
-  overlayOpacity = "bg-black/50",
+  overlayOpacity = "bg-black/15",
   align = "center",
 }: HeroProps) {
   const alignment =
@@ -39,11 +39,11 @@ export default function Hero({
 
       {/* Overlay & Glow */}
       <div
-        className={`absolute inset-0 ${overlayOpacity} bg-gradient-to-b from-black/30 to-black/10 flex ${alignment}`}
+        className={`absolute inset-0 ${overlayOpacity} bg-linear-to-b from-black/30 to-black/10 flex ${alignment}`}
       >
         <div className="max-w-3xl px-4 md:px-0">
           {/* Title */}
-          <h1 className="text-4xl md:text-6xl font-extrabold text-white drop-shadow-xl bg-clip-text bg-gradient-to-r from-teal-300 via-primary to-teal-500">
+          <h1 className="text-4xl md:text-6xl font-extrabold text-white drop-shadow-xl bg-clip-text bg-linear-to-r from-teal-300 via-primary to-teal-500">
             {title}
           </h1>
 

@@ -38,7 +38,7 @@ const team = [
 
 export default function TeamList() {
   return (
-    <section className="py-20 px-6 md:px-12 lg:px-20 bg-gradient-to-b from-teal-50 via-white to-teal-50">
+    <section className="py-20 px-6 md:px-12 lg:px-20 bg-linear-to-b from-teal-50 via-white to-teal-50">
       <SectionHeader
         subtitle="Our Team"
         title="Meet the Ministry Team"

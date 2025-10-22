@@ -5,7 +5,7 @@ import SectionHeader from "@/modules/components/sectionHeader";
 
 export default function ChurchOverview() {
   return (
-    <section className="py-20 px-6 md:px-12 lg:px-20 text-center bg-gradient-to-b from-white to-teal-50">
+    <section className="py-20 px-6 md:px-12 lg:px-20 text-center bg-linear-to-b from-white to-teal-50">
       {/* Section Header */}
       <SectionHeader
         subtitle="Who We Are"
@@ -42,7 +42,7 @@ export default function ChurchOverview() {
         </div>
 
         {/* Image 2 (Taller, Centered Vertically) */}
-        <div className="group relative w-full md:w-1/3 h-80 md:h-[28rem] overflow-hidden shadow-md hover:shadow-lg transition-all flex items-center justify-center">
+        <div className="group relative w-full md:w-1/3 h-80 md:h-112 overflow-hidden shadow-md hover:shadow-lg transition-all flex items-center justify-center">
           <Image
             src="https://images.pexels.com/photos/1848731/pexels-photo-1848731.jpeg"
             alt="Community"

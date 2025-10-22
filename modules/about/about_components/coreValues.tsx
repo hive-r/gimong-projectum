@@ -32,7 +32,7 @@ const values = [
 
 export default function CoreValues() {
   return (
-    <section className="py-20 px-6 md:px-12 lg:px-20 bg-gradient-to-b from-white to-teal-50">
+    <section className="py-20 px-6 md:px-12 lg:px-20 bg-linear-to-b from-white to-teal-50">
       {/* Section Header */}
       <SectionHeader subtitle="Core Values" title="What We Stand For" />
 
