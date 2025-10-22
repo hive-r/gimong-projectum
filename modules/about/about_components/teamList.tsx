@@ -6,33 +6,33 @@ import SectionHeader from "@/modules/components/sectionHeader";
 const team = [
   {
     imageUrl: "https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg", 
-    name: "Sarah Williams",
-    role: "Children’s Ministry Leader",
+    name: "Chairman: Robert P.",
+    role: "Praise and Worhip Ministry",
   },
   {
     imageUrl: "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg", 
-    name: "David Brown",
-    role: "Youth Pastor",
+    name: "Chairman: Iverson S.",
+    role: "Media Ministry",
   },
   {
     imageUrl: "https://images.pexels.com/photos/1647116/pexels-photo-1647116.jpeg",
-    name: "Emily Davis",
-    role: "Choir Director",
+    name: "Chairman: Shane S.",
+    role: "Finance Ministry",
   },
   {
     imageUrl: "https://images.pexels.com/photos/3184613/pexels-photo-3184613.jpeg", 
-    name: "Michael Lee",
-    role: "Outreach Coordinator",
+    name: "Chairman: Jeannette P.",
+    role: "Sunday School Ministry",
   },
   {
     imageUrl: "https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg", 
-    name: "Rachel Green",
-    role: "Hospitality Ministry",
+    name: "Chairman: Frenilyn C.",
+    role: "Visitation Ministry",
   },
   {
     imageUrl: "https://images.pexels.com/photos/5926382/pexels-photo-5926382.jpeg", 
-    name: "James Wilson",
-    role: "Technical Director",
+    name: "Chairman: Johnelle A.",
+    role: "Maintenance Ministry",
   },
 ];
 

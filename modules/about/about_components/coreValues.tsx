@@ -5,28 +5,28 @@ import SectionHeader from "@/modules/components/sectionHeader";
 
 const values = [
   {
-    title: "Faith",
+    title: "Biblically Grounded & Spirit-Filled",
     description:
-      "We live by **faith**, trusting completely in God’s **promises** and **guidance**. Our faith fuels everything we do — from **worship** and **service** to how we love and forgive others. It is the foundation that strengthens us in times of uncertainty and gives us courage to follow God’s calling with **confidence** and **peace**.",
+      "We derive all our **doctrines and practices** from the **Bible**, recognizing it as the **ultimate authority** for faith and life. We commit to **live by being sensitive** to the leading of the **Holy Spirit**, bearing His **fruit and gifts**, and allowing Him to bring out the **fullest potential** of the church. Through Scripture and the Spirit, we are guided, strengthened, and continually transformed to walk in God’s will.",
     image: "https://images.pexels.com/photos/1296720/pexels-photo-1296720.jpeg",
   },
   {
-    title: "Community",
+    title: "Prayerful",
     description:
-      "We believe that life is better **together**. In community, we find **strength**, **encouragement**, and **accountability** as we walk side by side, growing in **love** and **unity**. Together, we share each other’s burdens, celebrate victories, and reflect the **heart of Christ** through genuine relationships rooted in **compassion** and **grace**.",
-    image: "https://images.pexels.com/photos/976866/pexels-photo-976866.jpeg",
+      "We are a **praying church**, believing in the **power of the Holy Spirit** and the **promises of Christ**. Prayer is our way of **communing with God** — seeking His **guidance**, experiencing **intimacy**, and aligning ourselves with His **will**. As Christ promised that prayer can **move mountains**, we commit ourselves to a **life of prayer**, expecting great things to happen through faith.",
+    image: "https://images.pexels.com/photos/5997003/pexels-photo-5997003.jpeg",
   },
   {
-    title: "Service",
+    title: "Christ-Centered",
     description:
-      "We serve with **humility** and **joy**, following the example of **Jesus**, who came not to be served but to serve. Every act of **kindness**, no matter how small, is a reflection of His heart for others. Through **service**, we demonstrate God’s **love in action**, bringing **light** and **hope** to those in need within our church and beyond.",
+      "Jesus Christ is the **center of everything** we do. He is the **manifestation of God’s glory**, and apart from Him, we can bear no fruit. We ensure that **Christ remains the focus** of all our **worship, ministry, and service**, so that every action we take glorifies Him and advances His kingdom.",
     image: "https://images.pexels.com/photos/2351719/pexels-photo-2351719.jpeg",
   },
   {
-    title: "Integrity",
+    title: "Community & Volunteerism",
     description:
-      "We live with **honesty**, **humility**, and **consistency**. Integrity means doing what is **right** — even when no one is watching — and letting our lives be a true reflection of **Christ**. We strive to honor God in every **word** and **action**, building **trust** and **credibility** as His representatives in our homes, and communities.",
-    image: "https://images.pexels.com/photos/5997003/pexels-photo-5997003.jpeg",
+      "We commit to nurture our **relationships as one family** through **sharing, hospitality, equality, affection, and respect**. By exercising our **God-given gifts**, showing **generosity**, and extending **service without expecting anything in return**, we make **Christ known in tangible ways**. We believe that serving one another in love strengthens our unity and reflects the **heart of Christ** to the world.",
+    image: "https://images.pexels.com/photos/976866/pexels-photo-976866.jpeg",
   },
 ];
 

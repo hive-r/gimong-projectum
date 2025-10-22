@@ -10,15 +10,14 @@ export default function VisionMission() {
             Our Mission
           </h4>
           <h3 className="text-3xl uppercase font-semibold text-gray-800 mb-4">
-            Leading People Closer to Christ
+            To Glorify God by Establishing a Community
           </h3>
           <p className="text-gray-700 text-base md:text-lg leading-relaxed">
-            To lead people into a deeper and lasting relationship with Jesus
-            Christ — helping them grow in{" "}
-            <span className="font-semibold text-primary">faith</span>, walk in{" "}
-            <span className="font-semibold text-primary">love</span>, and serve
-            others with compassion and purpose. We aim to build disciples who
-            reflect Christ in their families, communities, and the world.
+            To <span className="font-semibold text-primary">glorify God</span> by establishing a community responsible to{" "}
+            <span className="font-semibold text-primary">evangelize</span>,{" "}
+            <span className="font-semibold text-primary">equip</span>, and{" "}
+            <span className="font-semibold text-primary">mobilize</span> members in{" "}
+            <span className="font-semibold text-primary">making disciples</span>.
           </p>
         </div>
 
@@ -28,20 +27,14 @@ export default function VisionMission() {
             Our Vision
           </h4>
           <h3 className="text-3xl uppercase font-semibold text-gray-800 mb-4">
-            A Church Alive in Faith and Love
+            Center for Worship with Multiplying Churches
           </h3>
           <p className="text-gray-700 text-base md:text-lg leading-relaxed">
-            To be a vibrant, Christ-centered community where everyone
-            experiences God’s{" "}
-            <span className="font-semibold text-primary">grace</span> and{" "}
-            <span className="font-semibold text-primary">truth</span>. We
-            envision a church united in{" "}
-            <span className="font-semibold text-primary">faith</span>,
-            overflowing with{" "}
-            <span className="font-semibold text-primary">love</span>, and
-            passionately sharing the{" "}
-            <span className="font-semibold text-primary">Gospel</span> to impact
-            generations for God’s glory.
+            We envision <span className="font-semibold text-primary">LTCB</span> as a{" "}
+            <span className="font-semibold text-primary">center for worship</span> with{" "}
+            <span className="font-semibold text-primary">multiplying churches</span> that have{" "}
+            <span className="font-semibold text-primary">strong and committed members</span> who{" "}
+            <span className="font-semibold text-primary">make disciples</span>.
           </p>
         </div>
       </div>

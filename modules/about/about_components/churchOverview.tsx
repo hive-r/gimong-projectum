@@ -9,20 +9,21 @@ export default function ChurchOverview() {
       {/* Section Header */}
       <SectionHeader
         subtitle="Who We Are"
-        title="A Family of Faith, Hope, and Love"
+        title="The Vine – A Symbol of Life and Community"
         align="center"
       />
 
       {/* Description */}
       <p className="mt-6 max-w-4xl mx-auto text-gray-700 text-lg md:text-xl leading-relaxed">
-        We are a Christ-centered community dedicated to living out the gospel in
-        every part of our lives. Here, you’ll find people from all walks of life
-        growing together in{" "}
-        <span className="font-semibold text-primary">faith</span>,{" "}
-        <span className="font-semibold text-primary">hope</span>, and{" "}
-        <span className="font-semibold text-primary">love</span> — encouraging
-        one another, serving our community, and sharing the message of Jesus
-        with the world.
+        The <span className="font-semibold text-primary">Vine</span> represents
+        Christ as the <span className="font-semibold text-primary">source of everything</span>.
+        The branches symbolize believers who are{" "}
+        <span className="font-semibold text-primary">connected to Christ</span>,
+        drawing life, strength, and purpose from Him. The cluster of grape fruits
+        reflects a <span className="font-semibold text-primary">loving community</span>{" "}
+        and <span className="font-semibold text-primary">fruitfulness</span> that comes
+        from abiding in Him. This symbol, illustrated in caricature, reminds us that
+        apart from the Vine, we can do nothing — but in Him, we bear much fruit.
       </p>
 
       {/* Images Row */}
@@ -31,13 +32,13 @@ export default function ChurchOverview() {
         <div className="group relative w-full md:w-1/3 h-64 md:h-94 overflow-hidden shadow-sm hover:shadow-md transition-all">
           <Image
             src="https://images.pexels.com/photos/3633711/pexels-photo-3633711.jpeg"
-            alt="Worship"
+            alt="The Vine - Christ the Source"
             fill
             className="object-cover group-hover:scale-105 transition-transform duration-500"
           />
           <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-colors" />
           <p className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white text-lg font-semibold drop-shadow-lg">
-            Worship Together
+            Christ the Source
           </p>
         </div>
 
@@ -45,13 +46,13 @@ export default function ChurchOverview() {
         <div className="group relative w-full md:w-1/3 h-80 md:h-112 overflow-hidden shadow-md hover:shadow-lg transition-all flex items-center justify-center">
           <Image
             src="https://images.pexels.com/photos/1848731/pexels-photo-1848731.jpeg"
-            alt="Community"
+            alt="Branches - Believers in Connection"
             fill
             className="object-cover group-hover:scale-105 transition-transform duration-500"
           />
           <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-colors" />
           <p className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white text-lg font-semibold drop-shadow-lg">
-            Build Relationships
+            Believers Connected to Christ
           </p>
         </div>
 
@@ -59,13 +60,13 @@ export default function ChurchOverview() {
         <div className="group relative w-full md:w-1/3 h-64 md:h-94 overflow-hidden shadow-sm hover:shadow-md transition-all">
           <Image
             src="https://images.pexels.com/photos/1771218/pexels-photo-1771218.jpeg"
-            alt="Prayer"
+            alt="Fruitfulness and Community"
             fill
             className="object-cover group-hover:scale-105 transition-transform duration-500"
           />
           <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-colors" />
           <p className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white text-lg font-semibold drop-shadow-lg">
-            Pray Together
+            Loving and Fruitful Community
           </p>
         </div>
       </div>

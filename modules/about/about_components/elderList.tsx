@@ -6,18 +6,18 @@ import SectionHeader from "@/modules/components/sectionHeader";
 const elders = [
   {
     imageUrl: "https://images.pexels.com/photos/819530/pexels-photo-819530.jpeg", 
-    name: "John Doe",
-    role: "Senior Pastor",
+    name: "Esteban Baday Jr.",
+    role: "Church Pastor",
   },
   {
     imageUrl: "https://images.pexels.com/photos/1181424/pexels-photo-1181424.jpeg", 
-    name: "Jane Smith",
+    name: "Jimry Payawal",
     role: "Church Elder",
   },
   {
     imageUrl: "https://images.pexels.com/photos/3756774/pexels-photo-3756774.jpeg", 
-    name: "Mark Johnson",
-    role: "Worship Leader",
+    name: "Nelson Velasco",
+    role: "Church Elder",
   },
 ];
 
