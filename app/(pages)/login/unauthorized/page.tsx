@@ -8,7 +8,7 @@ export default function UnauthorizedPage() {
   const router = useRouter();
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen bg-gradient-to-br from-gray-50 to-gray-200 text-center">
+    <div className="flex flex-col items-center justify-center h-screen bg-linear-to-br from-gray-50 to-gray-200 text-center">
       <div className="bg-white shadow-lg rounded-2xl p-10 max-w-md">
         <div className="flex justify-center mb-6">
           <div className="bg-red-100 p-4 rounded-full">

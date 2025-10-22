@@ -30,9 +30,9 @@ export const SermonDevotionalCardPublic: React.FC = () => {
   );
 
   return (
-    <section className="relative py-20 px-6 md:px-12 bg-gradient-to-b from-white via-gray-50 to-gray-100 overflow-hidden">
+    <section className="relative py-20 px-6 md:px-12 bg-linear-to-b from-white via-gray-50 to-gray-100 overflow-hidden">
       {/* Subtle Background Gradient */}
-      <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent pointer-events-none"></div>
+      <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top,var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent pointer-events-none"></div>
 
       {/* Header */}
       <div className="relative mb-4 text-center">
@@ -51,7 +51,7 @@ export const SermonDevotionalCardPublic: React.FC = () => {
       <div className="space-y-20 max-w-6xl mx-auto relative z-10">
         {/* Sermons Section */}
         <Card className="overflow-hidden border-0 shadow-xl rounded-none bg-white/90 backdrop-blur-sm transition-transform hover:scale-[1.01] hover:shadow-2xl">
-          <CardHeader className="text-center py-10 bg-gradient-to-r from-primary/10 to-primary/5 border-b border-gray-200">
+          <CardHeader className="text-center py-10 bg-linear-to-r from-primary/10 to-primary/5 border-b border-gray-200">
             <div className="flex justify-center mb-4">
               <div className="p-4 bg-primary/10 rounded-full">
                 <BookOpenIcon className="h-10 w-10 text-primary" />
@@ -81,7 +81,7 @@ export const SermonDevotionalCardPublic: React.FC = () => {
 
         {/* Devotionals Section */}
         <Card className="overflow-hidden border-0 shadow-xl rounded-none bg-white/90 backdrop-blur-sm transition-transform hover:scale-[1.01] hover:shadow-2xl">
-          <CardHeader className="text-center py-10 bg-gradient-to-r from-primary/10 to-primary/5 border-b border-gray-200">
+          <CardHeader className="text-center py-10 bg-linear-to-r from-primary/10 to-primary/5 border-b border-gray-200">
             <div className="flex justify-center mb-4">
               <div className="p-4 bg-primary/10 rounded-full">
                 <FileTextIcon className="h-10 w-10 text-aprimary/10" />

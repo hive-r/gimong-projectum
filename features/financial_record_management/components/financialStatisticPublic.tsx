@@ -103,7 +103,7 @@ export const FinancialStatisticsPublic: React.FC = () => {
   }, [cashouts]);
 
   return (
-    <section className="py-20 px-6 md:px-12 bg-gradient-to-b from-white via-gray-50 to-gray-100 min-h-screen">
+    <section className="py-20 px-6 md:px-12 bg-linear-to-b from-white via-gray-50 to-gray-100 min-h-screen">
       {/* Section Header */}
       <div className="text-center mb-14">
         <SectionHeader
@@ -121,7 +121,7 @@ export const FinancialStatisticsPublic: React.FC = () => {
       <div className="flex flex-col md:flex-row justify-center gap-8 max-w-5xl mx-auto">
         {/* Total Monetary */}
         <Card className="flex-1 border-none shadow-lg bg-white/90 backdrop-blur-sm hover:shadow-xl transition-shadow duration-300 rounded-2xl">
-          <CardHeader className="text-center border-b border-gray-100 bg-gradient-to-r from-primary/5 to-transparent">
+          <CardHeader className="text-center border-b border-gray-100 bg-linear-to-r from-primary/5 to-transparent">
             <div className="flex justify-center mb-3">
               <DollarSignIcon className="h-12 w-12 text-primary" />
             </div>
@@ -144,7 +144,7 @@ export const FinancialStatisticsPublic: React.FC = () => {
 
         {/* Total Non-Monetary */}
         <Card className="flex-1 border-none shadow-lg bg-white/90 backdrop-blur-sm hover:shadow-xl transition-shadow duration-300 rounded-2xl">
-          <CardHeader className="text-center border-b border-gray-100 bg-gradient-to-r from-primary/5 to-transparent">
+          <CardHeader className="text-center border-b border-gray-100 bg-linear-to-r from-primary/5 to-transparent">
             <div className="flex justify-center mb-3">
               <UsersIcon className="h-12 w-12 text-primary" />
             </div>
@@ -167,7 +167,7 @@ export const FinancialStatisticsPublic: React.FC = () => {
       {/* Charts */}
       {/* 1️⃣ Monetary by Type */}
       <Card className="mt-16 max-w-5xl mx-auto shadow-lg border-none bg-white/90 backdrop-blur-sm rounded-2xl hover:shadow-xl transition-all duration-300">
-        <CardHeader className="text-center border-b border-gray-100 py-6 bg-gradient-to-r from-primary/5 to-transparent">
+        <CardHeader className="text-center border-b border-gray-100 py-6 bg-linear-to-r from-primary/5 to-transparent">
           <CardTitle className="text-2xl font-semibold text-gray-800">
             Monetary Contributions by Type
           </CardTitle>
@@ -200,7 +200,7 @@ export const FinancialStatisticsPublic: React.FC = () => {
 
       {/* 2️⃣ Net Donations by Type */}
       <Card className="mt-16 max-w-5xl mx-auto shadow-lg border-none bg-white/90 backdrop-blur-sm rounded-2xl hover:shadow-xl transition-all duration-300">
-        <CardHeader className="text-center border-b border-gray-100 py-6 bg-gradient-to-r from-primary/5 to-transparent">
+        <CardHeader className="text-center border-b border-gray-100 py-6 bg-linear-to-r from-primary/5 to-transparent">
           <CardTitle className="text-2xl font-semibold text-gray-800">
             Net Donations by Type (After Cashouts)
           </CardTitle>
@@ -248,7 +248,7 @@ export const FinancialStatisticsPublic: React.FC = () => {
 
       {/* 3️⃣ Cashouts by Source Fund */}
       <Card className="mt-16 max-w-5xl mx-auto shadow-lg border-none bg-white/90 backdrop-blur-sm rounded-2xl hover:shadow-xl transition-all duration-300">
-        <CardHeader className="text-center border-b border-gray-100 py-6 bg-gradient-to-r from-primary/5 to-transparent">
+        <CardHeader className="text-center border-b border-gray-100 py-6 bg-linear-to-r from-primary/5 to-transparent">
           <CardTitle className="text-2xl font-semibold text-gray-800">
             Cashouts by Source Fund
           </CardTitle>

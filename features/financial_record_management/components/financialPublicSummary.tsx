@@ -99,7 +99,7 @@ export const FinancialPublicSummary: React.FC = () => {
   const netTotal = totalMonetary - totalCashouts;
 
   return (
-    <section className="py-20 px-6 md:px-12 bg-gradient-to-b from-white via-gray-50 to-gray-100 min-h-screen">
+    <section className="py-20 px-6 md:px-12 bg-linear-to-b from-white via-gray-50 to-gray-100 min-h-screen">
       {/* Header */}
       <div className="text-center mb-14">
         <SectionHeader
@@ -116,7 +116,7 @@ export const FinancialPublicSummary: React.FC = () => {
       {/* Total Contributions + Cashouts Summary */}
       <div className="flex flex-col md:flex-row justify-center gap-8 max-w-5xl mx-auto mb-14">
         <Card className="flex-1 border-none shadow-lg bg-white/90 backdrop-blur-sm rounded-2xl hover:shadow-xl transition-all duration-300">
-          <CardHeader className="text-center border-b border-gray-100 py-6 bg-gradient-to-r from-primary/5 to-transparent">
+          <CardHeader className="text-center border-b border-gray-100 py-6 bg-linear-to-r from-primary/5 to-transparent">
             <CardTitle className="text-2xl font-semibold text-gray-800">Total Contributions</CardTitle>
             <CardDescription className="text-gray-500">
               Overview of all monetary and non-monetary contributions including cashouts.
@@ -147,7 +147,7 @@ export const FinancialPublicSummary: React.FC = () => {
 
       {/* Monthly Summary Table */}
       <Card className="max-w-5xl mx-auto mb-14 border-none shadow-lg bg-white/90 backdrop-blur-sm rounded-2xl hover:shadow-xl transition-all duration-300">
-        <CardHeader className="border-b border-gray-100 py-6 bg-gradient-to-r from-primary/5 to-transparent text-center">
+        <CardHeader className="border-b border-gray-100 py-6 bg-linear-to-r from-primary/5 to-transparent text-center">
           <CardTitle className="text-2xl font-semibold text-gray-800">Monthly Summary</CardTitle>
           <CardDescription className="text-gray-500">
             Contributions and cashouts per month.
@@ -187,7 +187,7 @@ export const FinancialPublicSummary: React.FC = () => {
 
       {/* Yearly Summary Table */}
       <Card className="max-w-5xl mx-auto border-none shadow-lg bg-white/90 backdrop-blur-sm rounded-2xl hover:shadow-xl transition-all duration-300">
-        <CardHeader className="border-b border-gray-100 py-6 bg-gradient-to-r from-primary/5 to-transparent text-center">
+        <CardHeader className="border-b border-gray-100 py-6 bg-linear-to-r from-primary/5 to-transparent text-center">
           <CardTitle className="text-2xl font-semibold text-gray-800">Yearly Summary</CardTitle>
           <CardDescription className="text-gray-500">
             Contributions and cashouts per year.
