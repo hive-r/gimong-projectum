@@ -61,7 +61,7 @@ export default function AdminPage() {
     <ProtectedRoute allowedRoles={["admin"]}>
       <div className="flex h-screen bg-gray-50 overflow-hidden">
         {/* Sidebar */}
-        <aside className="w-82 bg-white border-r border-gray-200 p-6 flex flex-col sticky top-0 h-screen shadow-sm">
+        <aside className="w-72 bg-white border-r border-gray-200 p-6 flex flex-col sticky top-0 h-screen shadow-sm">
           <div className="mb-12">
             <h2 className="text-3xl font-bold text-gray-800 text-center">
               Admin Panel

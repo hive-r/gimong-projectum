@@ -129,86 +129,108 @@ export const FinancialStatistics: React.FC = () => {
   }, [nonMonetaryRecords]);
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
-      <h1
-        className="text-4xl md:text-5xl font-bold mb-6 text-center uppercase"
-        style={{ color: primaryColor }}
-      >
-        Financial Statistics
-      </h1>
+   <div className="p-6 sm:p-8 md:p-12 bg-gray-50 min-h-screen">
+  <h1
+    className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-10 text-center uppercase tracking-wide leading-tight"
+    style={{ color: primaryColor }}
+  >
+    Financial Statistics
+  </h1>
 
-      <div className="flex w-full max-w-5xl mx-auto flex-col gap-6 md:flex-row">
-        {/* Total Monetary */}
-        <Card
-          className="flex-1 rounded-none border-t-4"
-          style={{ borderColor: primaryColor }}
+  <div className="w-full max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+    {/* Total Monetary Donations */}
+    <Card
+      className="rounded-none border-t-4 shadow-sm hover:shadow-md transition-shadow duration-300"
+      style={{ borderColor: primaryColor }}
+    >
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2 text-lg sm:text-xl md:text-2xl lg:text-3xl font-semibold">
+          <DollarSignIcon
+            className="h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7"
+            color={primaryColor}
+          />
+          Total Monetary Donations
+        </CardTitle>
+        <CardDescription className="text-gray-600 text-xs sm:text-sm md:text-base lg:text-lg">
+          Sum of all monetary donations.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <p
+          className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold wrap-break-word"
+          style={{ color: primaryColor }}
         >
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-3xl">
-              <DollarSignIcon className="h-8 w-8" color={primaryColor} />
-              Total Monetary Donations
-            </CardTitle>
-            <CardDescription>
-              Sum of all active monetary donations.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="text-6xl font-bold" style={{ color: primaryColor }}>
-              ₱
-              {totalMonetary.toLocaleString("en-PH", {
-                minimumFractionDigits: 2,
-              })}
-            </p>
-            <p className="text-gray-500">{activeMonetary.length} donations</p>
-          </CardContent>
-        </Card>
+          ₱
+          {totalMonetary.toLocaleString("en-PH", {
+            minimumFractionDigits: 2,
+          })}
+        </p>
+        <p className="text-gray-500 text-xs sm:text-sm md:text-base">
+          {activeMonetary.length} donations
+        </p>
+      </CardContent>
+    </Card>
 
-        {/* Total Cashouts */}
-        <Card
-          className="flex-1 rounded-none border-t-4"
-          style={{ borderColor: primaryColor }}
+    {/* Total Cashouts */}
+    <Card
+      className="rounded-none border-t-4 shadow-sm hover:shadow-md transition-shadow duration-300"
+      style={{ borderColor: primaryColor }}
+    >
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2 text-lg sm:text-xl md:text-2xl lg:text-3xl font-semibold">
+          <CoinsIcon
+            className="h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7"
+            color={primaryColor}
+          />
+          Total Monetary Cashouts
+        </CardTitle>
+        <CardDescription className="text-gray-600 text-xs sm:text-sm md:text-base lg:text-lg">
+          Sum of all Monetary cashouts.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <p
+          className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold wrap-break-word"
+          style={{ color: primaryColor }}
         >
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-3xl">
-              <CoinsIcon className="h-8 w-8" color={primaryColor} />
-              Total Monetary Cashouts
-            </CardTitle>
-            <CardDescription>Sum of all cashouts.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="text-6xl font-bold" style={{ color: primaryColor }}>
-              ₱
-              {totalCashouts.toLocaleString("en-PH", {
-                minimumFractionDigits: 2,
-              })}
-            </p>
-          </CardContent>
-        </Card>
+          ₱
+          {totalCashouts.toLocaleString("en-PH", {
+            minimumFractionDigits: 2,
+          })}
+        </p>
+      </CardContent>
+    </Card>
 
-        {/* Total Non-Monetary Donations */}
-        <Card
-          className="flex-1 rounded-none border-t-4"
-          style={{ borderColor: primaryColor }}
+    {/* Non-Monetary Donations */}
+    <Card
+      className="rounded-none border-t-4 shadow-sm hover:shadow-md transition-shadow duration-300"
+      style={{ borderColor: primaryColor }}
+    >
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2 text-lg sm:text-xl md:text-2xl lg:text-3xl font-semibold">
+          <GiftIcon
+            className="h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7"
+            color={primaryColor}
+          />
+          Non-Monetary Donations
+        </CardTitle>
+        <CardDescription className="text-gray-600 text-xs sm:text-sm md:text-base lg:text-lg">
+          Count of non-monetary donations.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <p
+          className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold wrap-break-word"
+          style={{ color: primaryColor }}
         >
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-3xl">
-              <GiftIcon className="h-8 w-8" color={primaryColor} />
-              Non-Monetary Donations
-            </CardTitle>
-            <CardDescription>
-              Count of all non-monetary donations.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="text-6xl font-bold" style={{ color: primaryColor }}>
-              {totalNonMonetary.toLocaleString()}
-            </p>
-            <p className="text-gray-500">
-              {activeNonMonetary.length} items donated
-            </p>
-          </CardContent>
-        </Card>
-      </div>
+          {totalNonMonetary.toLocaleString()}
+        </p>
+        <p className="text-gray-500 text-xs sm:text-sm md:text-base">
+          {activeNonMonetary.length} items donated
+        </p>
+      </CardContent>
+    </Card>
+  </div>
 
       {/* Net Donations */}
       <Card
