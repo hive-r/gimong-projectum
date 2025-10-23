@@ -41,7 +41,7 @@ export const SermonDevotionalCardPublic: React.FC = () => {
           title="Sermons & Devotionals"
           align="center"
         />
-        <p className="text-gray-600 max-w-2xl mx-auto mt-4 leading-relaxed">
+        <p className="text-gray-600 max-w-3xl mx-auto mt-4 leading-relaxed text-lg">
         Deepen your understanding of God&apos;s Word through inspiring sermons and
         heartfelt devotionals. Listen, reflect, and grow in your daily walk
         with Christ.

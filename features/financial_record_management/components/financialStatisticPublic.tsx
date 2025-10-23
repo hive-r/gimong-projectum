@@ -111,7 +111,7 @@ export const FinancialStatisticsPublic: React.FC = () => {
           title="Financial Contributions Overview"
           align="center"
         />
-        <p className="text-gray-600 max-w-2xl mx-auto mt-4">
+        <p className="text-gray-600 max-w-3xl mx-auto mt-4 text-lg">
           A reflection of God’s grace through the generosity of our members. Here’s how our
           community continues to give and serve through financial and non-monetary support.
         </p>

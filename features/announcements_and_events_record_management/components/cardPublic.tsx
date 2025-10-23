@@ -32,7 +32,7 @@ export const AnnouncementEventCardPublic: React.FC = () => {
   }, []);
 
   return (
-    <section className="relative py-20 px-6 md:px-12 bg-linear-to-b from-white via-gray-50 to-gray-100 overflow-hidden">
+    <section id="announcements" className="relative py-20 px-6 md:px-12 bg-linear-to-b from-white via-gray-50 to-gray-100 overflow-hidden">
       {/* Decorative background */}
       <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top,var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent pointer-events-none"></div>
 
@@ -43,7 +43,7 @@ export const AnnouncementEventCardPublic: React.FC = () => {
           title="Announcements & Upcoming Events"
           align="center"
         />
-        <p className="text-gray-600 max-w-2xl mx-auto mt-4 leading-relaxed">
+        <p className="text-gray-600 max-w-3xl mx-auto mt-4 leading-relaxed text-lg">
           Discover the latest updates, gatherings, and church happenings. We invite you to stay involved — 
           from uplifting worship services to meaningful community events that strengthen our faith together.
         </p>

@@ -5,7 +5,7 @@ import SectionHeader from "@/modules/components/sectionHeader";
 
 export default function ChurchOverview() {
   return (
-    <section className="py-20 px-6 md:px-12 lg:px-20 text-center bg-linear-to-b from-white to-teal-50">
+    <section id="overview" className="py-20 px-6 md:px-12 lg:px-20 text-center bg-linear-to-b from-white to-teal-50">
       {/* Section Header */}
       <SectionHeader
         subtitle="Who We Are"

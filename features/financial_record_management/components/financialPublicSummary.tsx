@@ -107,7 +107,7 @@ export const FinancialPublicSummary: React.FC = () => {
           title="Public Financial Summary"
           align="center"
         />
-        <p className="text-gray-600 max-w-2xl mx-auto mt-4">
+        <p className="text-gray-600 max-w-3xl mx-auto mt-4 text-lg">
           Our mission thrives through faithful generosity. Explore the monthly and yearly breakdowns of 
           both monetary and non-monetary contributions, including cashouts.
         </p>

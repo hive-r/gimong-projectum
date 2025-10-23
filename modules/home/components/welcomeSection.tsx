@@ -6,21 +6,21 @@ import SectionHeader from "@/modules/components/sectionHeader";
 
 const cards = [
   {
-    href: "/announcements",
+    href: "/announcements#announcements",
     icon: Church,
     title: "Sunday Service",
     description:
       "Join us every Sunday for worship, fellowship, and encouragement. Experience heartfelt praise, inspiring sermons, and a welcoming community of believers.",
   },
   {
-    href: "/contact",
+    href: "/about#location",
     icon: MapPin,
     title: "Where Are We?",
     description:
       "Located in the heart of the community, our church is easy to find and always open to all. Come as you are — we can’t wait to meet you!",
   },
   {
-    href: "/about",
+    href: "/about#overview",
     icon: Users,
     title: "Who Are We?",
     description:
