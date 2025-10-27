@@ -13,10 +13,12 @@ import {
   listenToMonetaryRecords,
   listenToNonMonetaryRecords,
   listenToCashoutRecords,
+  listenToCashoutReports, // ✅ added
 } from "../service";
 import { MonetaryRecord } from "../types/monetary";
 import { NonMonetaryRecord } from "../types/nonMonetary";
 import { CashoutRecord } from "../types/cashout";
+import { CashoutReport } from "../types/cashout"; // ✅ added
 import {
   BarChart,
   Bar,
@@ -37,22 +39,22 @@ export const FinancialStatisticsPublic: React.FC = () => {
   const [monetaryRecords, setMonetaryRecords] = useState<MonetaryRecord[]>([]);
   const [nonMonetaryRecords, setNonMonetaryRecords] = useState<NonMonetaryRecord[]>([]);
   const [cashouts, setCashouts] = useState<CashoutRecord[]>([]);
+  const [cashoutReports, setCashoutReports] = useState<CashoutReport[]>([]); // ✅ added
 
   const primaryColor = "hsl(180, 61%, 20%)";
 
+  // 👂 Listeners
   useEffect(() => {
-    const unsubscribe = listenToMonetaryRecords(setMonetaryRecords);
-    return () => unsubscribe();
-  }, []);
-
-  useEffect(() => {
-    const unsubscribe = listenToNonMonetaryRecords(setNonMonetaryRecords);
-    return () => unsubscribe();
-  }, []);
-
-  useEffect(() => {
-    const unsubscribe = listenToCashoutRecords(setCashouts);
-    return () => unsubscribe();
+    const unsub1 = listenToMonetaryRecords(setMonetaryRecords);
+    const unsub2 = listenToNonMonetaryRecords(setNonMonetaryRecords);
+    const unsub3 = listenToCashoutRecords(setCashouts);
+    const unsub4 = listenToCashoutReports(setCashoutReports); // ✅ added
+    return () => {
+      unsub1();
+      unsub2();
+      unsub3();
+      unsub4();
+    };
   }, []);
 
   // Totals
@@ -73,7 +75,25 @@ export const FinancialStatisticsPublic: React.FC = () => {
     return Object.entries(grouped).map(([name, value]) => ({ name, value }));
   }, [monetaryRecords]);
 
-  // Net Donations by Type (donations - cashouts)
+  // ✅ Reported Cashouts Only
+  const reportedCashouts = useMemo(() => {
+    const reportIds = new Set(
+      cashoutReports.filter((r) => !r.isArchived).map((r) => r.cashoutId)
+    );
+    return cashouts.filter((c) => reportIds.has(c.id) && !c.isArchived);
+  }, [cashoutReports, cashouts]);
+
+  // ✅ Cashouts by Source Fund (only reported)
+  const cashoutsBySource: ChartData[] = useMemo(() => {
+    const grouped: Record<string, number> = {};
+    reportedCashouts.forEach((c) => {
+      if (!c.sourceFund) return;
+      grouped[c.sourceFund] = (grouped[c.sourceFund] || 0) + (c.amount || 0);
+    });
+    return Object.entries(grouped).map(([name, value]) => ({ name, value }));
+  }, [reportedCashouts]);
+
+  // ✅ Net Donations by Type (subtract reported cashouts only)
   const netDonationsByType: ChartData[] = useMemo(() => {
     const donationMap: Record<string, number> = {};
     monetaryRecords
@@ -83,7 +103,8 @@ export const FinancialStatisticsPublic: React.FC = () => {
       });
 
     const cashoutMap: Record<string, number> = {};
-    cashouts.forEach((c) => {
+    reportedCashouts.forEach((c) => {
+      if (!c.sourceFund) return;
       cashoutMap[c.sourceFund] = (cashoutMap[c.sourceFund] || 0) + (c.amount || 0);
     });
 
@@ -91,16 +112,8 @@ export const FinancialStatisticsPublic: React.FC = () => {
       name: type,
       value: amount - (cashoutMap[type] || 0),
     }));
-  }, [monetaryRecords, cashouts]);
+  }, [monetaryRecords, reportedCashouts]);
 
-  // Cashouts by Source
-  const cashoutsBySource: ChartData[] = useMemo(() => {
-    const grouped: Record<string, number> = {};
-    cashouts.forEach((c) => {
-      grouped[c.sourceFund] = (grouped[c.sourceFund] || 0) + (c.amount || 0);
-    });
-    return Object.entries(grouped).map(([name, value]) => ({ name, value }));
-  }, [cashouts]);
 
   return (
     <section className="py-20 px-6 md:px-12 bg-linear-to-b from-white via-gray-50 to-gray-100 min-h-screen">

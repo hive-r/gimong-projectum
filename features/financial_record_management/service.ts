@@ -230,6 +230,10 @@ export function listenToCashoutRecords(
   );
 }
 
+export async function getCashoutRecords(): Promise<CashoutRecord[]> {
+  return getAllDocuments<CashoutRecord>(CASHOUT_COLLECTION);
+}
+
 // ─── CASHOUT REPORT SERVICE ─────────────────────────────────────────────
 export async function createCashoutReport(
   data: Omit<CashoutReport, "id" | "dateCreated">
@@ -264,6 +268,10 @@ export function listenToCashoutReports(
   callback: (docs: CashoutReport[]) => void
 ): () => void {
   return listenToCollection<CashoutReport>(CASHOUT_REPORT_COLLECTION, callback);
+}
+
+export async function getCashoutReports(): Promise<CashoutReport[]> {
+  return getAllDocuments<CashoutReport>(CASHOUT_REPORT_COLLECTION);
 }
 
 export async function createNonMonetaryReport(report: NonMonetaryReport) {

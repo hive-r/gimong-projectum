@@ -12,10 +12,12 @@ import {
   listenToMonetaryRecords,
   listenToNonMonetaryRecords,
   listenToCashoutRecords,
+  listenToCashoutReports, // ✅ added
 } from "../service";
 import { MonetaryRecord } from "../types/monetary";
 import { NonMonetaryRecord } from "../types/nonMonetary";
 import { CashoutRecord } from "../types/cashout";
+import { CashoutReport } from "../types/cashout"; // ✅ added
 import { format, parseISO } from "date-fns";
 import SectionHeader from "@/modules/components/sectionHeader";
 import { BarChart, Bar, ResponsiveContainer } from "recharts";
@@ -24,78 +26,107 @@ export const FinancialPublicSummary: React.FC = () => {
   const [monetaryRecords, setMonetaryRecords] = useState<MonetaryRecord[]>([]);
   const [nonMonetaryRecords, setNonMonetaryRecords] = useState<NonMonetaryRecord[]>([]);
   const [cashouts, setCashouts] = useState<CashoutRecord[]>([]);
+  const [cashoutReports, setCashoutReports] = useState<CashoutReport[]>([]); // ✅ added
   const themeColor = "hsl(180, 61%, 20%)";
 
+  // 👂 Listen to all records
   useEffect(() => {
     const unsubMonetary = listenToMonetaryRecords(setMonetaryRecords);
     const unsubNonMonetary = listenToNonMonetaryRecords(setNonMonetaryRecords);
     const unsubCashouts = listenToCashoutRecords(setCashouts);
+    const unsubReports = listenToCashoutReports(setCashoutReports); // ✅ added
     return () => {
       unsubMonetary();
       unsubNonMonetary();
       unsubCashouts();
+      unsubReports();
     };
   }, []);
 
-  // 🗓 Monthly Summary
+  // ✅ Filter only reported cashouts
+  const reportedCashouts = useMemo(() => {
+    const reportIds = new Set(
+      cashoutReports.filter((r) => !r.isArchived).map((r) => r.cashoutId)
+    );
+    return cashouts.filter((c) => reportIds.has(c.id) && !c.isArchived);
+  }, [cashouts, cashoutReports]);
+
+  // 🗓 Monthly Summary (using reported cashouts)
   const monthlyData = useMemo(() => {
     const map: Record<string, { monetary: number; nonMonetary: number; cashout: number }> = {};
+
     monetaryRecords.forEach((r) => {
       if (r.isArchived || typeof r.amount !== "number" || !r.dateCreated) return;
       const month = format(parseISO(r.dateCreated), "MMMM yyyy");
       if (!map[month]) map[month] = { monetary: 0, nonMonetary: 0, cashout: 0 };
       map[month].monetary += r.amount;
     });
+
     nonMonetaryRecords.forEach((r) => {
       if (r.isArchived || !r.dateCreated) return;
       const month = format(parseISO(r.dateCreated), "MMMM yyyy");
       if (!map[month]) map[month] = { monetary: 0, nonMonetary: 0, cashout: 0 };
       map[month].nonMonetary += 1;
     });
-    cashouts.forEach((c) => {
+
+    reportedCashouts.forEach((c) => {
       if (!c.dateCreated) return;
       const month = format(parseISO(c.dateCreated), "MMMM yyyy");
       if (!map[month]) map[month] = { monetary: 0, nonMonetary: 0, cashout: 0 };
       map[month].cashout += c.amount || 0;
     });
-    return Object.entries(map)
-      .map(([month, values]) => ({ month, ...values, net: values.monetary - values.cashout }))
-      .sort((a, b) => new Date(a.month).getTime() - new Date(b.month).getTime());
-  }, [monetaryRecords, nonMonetaryRecords, cashouts]);
 
-  // 📆 Yearly Summary
+    return Object.entries(map)
+      .map(([month, values]) => ({
+        month,
+        ...values,
+        net: values.monetary - values.cashout,
+      }))
+      .sort((a, b) => new Date(a.month).getTime() - new Date(b.month).getTime());
+  }, [monetaryRecords, nonMonetaryRecords, reportedCashouts]);
+
+  // 📆 Yearly Summary (using reported cashouts)
   const yearlyData = useMemo(() => {
     const map: Record<string, { monetary: number; nonMonetary: number; cashout: number }> = {};
+
     monetaryRecords.forEach((r) => {
       if (r.isArchived || typeof r.amount !== "number" || !r.dateCreated) return;
       const year = format(parseISO(r.dateCreated), "yyyy");
       if (!map[year]) map[year] = { monetary: 0, nonMonetary: 0, cashout: 0 };
       map[year].monetary += r.amount;
     });
+
     nonMonetaryRecords.forEach((r) => {
       if (r.isArchived || !r.dateCreated) return;
       const year = format(parseISO(r.dateCreated), "yyyy");
       if (!map[year]) map[year] = { monetary: 0, nonMonetary: 0, cashout: 0 };
       map[year].nonMonetary += 1;
     });
-    cashouts.forEach((c) => {
+
+    reportedCashouts.forEach((c) => {
       if (!c.dateCreated) return;
       const year = format(parseISO(c.dateCreated), "yyyy");
       if (!map[year]) map[year] = { monetary: 0, nonMonetary: 0, cashout: 0 };
       map[year].cashout += c.amount || 0;
     });
-    return Object.entries(map)
-      .map(([year, values]) => ({ year, ...values, net: values.monetary - values.cashout }))
-      .sort((a, b) => parseInt(a.year) - parseInt(b.year));
-  }, [monetaryRecords, nonMonetaryRecords, cashouts]);
 
+    return Object.entries(map)
+      .map(([year, values]) => ({
+        year,
+        ...values,
+        net: values.monetary - values.cashout,
+      }))
+      .sort((a, b) => parseInt(a.year) - parseInt(b.year));
+  }, [monetaryRecords, nonMonetaryRecords, reportedCashouts]);
+
+  // Totals (only reported cashouts counted)
   const totalMonetary = monetaryRecords
     .filter((r) => !r.isArchived && typeof r.amount === "number")
     .reduce((sum, r) => sum + r.amount, 0);
 
   const totalNonMonetary = nonMonetaryRecords.filter((r) => !r.isArchived).length;
 
-  const totalCashouts = cashouts.reduce((sum, c) => sum + (c.amount || 0), 0);
+  const totalCashouts = reportedCashouts.reduce((sum, c) => sum + (c.amount || 0), 0);
   const netTotal = totalMonetary - totalCashouts;
 
   return (
@@ -126,10 +157,10 @@ export const FinancialPublicSummary: React.FC = () => {
             <p className="text-4xl font-extrabold text-primary mb-2">
               ₱{totalMonetary.toLocaleString("en-PH")}
             </p>
-            <p className="text-gray-500 mb-1">{monetaryRecords.filter(r => !r.isArchived).length} monetary donations</p>
-            <p className="text-gray-500 mb-1">{totalNonMonetary} non-monetary contributions</p>
-            <p className="text-red-600 mb-2">₱{totalCashouts.toLocaleString("en-PH")} cashouts</p>
-            <p className="text-green-700 font-semibold text-lg">Net: ₱{netTotal.toLocaleString("en-PH")}</p>
+            <p className="text-gray-500 mb-1 text-xl">{monetaryRecords.filter(r => !r.isArchived).length} monetary donations</p>
+            <p className="text-gray-500 mb-1 text-xl">{totalNonMonetary} non-monetary contributions</p>
+            <p className="text-red-600 mb-2 text-xl">₱{totalCashouts.toLocaleString("en-PH")} cashouts</p>
+            <p className="text-green-700 font-semibold text-5xl">Net: ₱{netTotal.toLocaleString("en-PH")}</p>
 
             {/* Mini Monthly Trend Chart */}
             {monthlyData.length > 0 && (
@@ -171,7 +202,7 @@ export const FinancialPublicSummary: React.FC = () => {
                   <td className="p-3 text-right text-gray-700">₱{row.monetary.toLocaleString()}</td>
                   <td className="p-3 text-right text-gray-700">{row.nonMonetary}</td>
                   <td className="p-3 text-right text-red-600">₱{row.cashout.toLocaleString()}</td>
-                  <td className="p-3 text-right text-green-700 font-semibold">₱{row.net.toLocaleString()}</td>
+                  <td className="p-3 text-right text-green-700 font-semibold text-2xl">₱{row.net.toLocaleString()}</td>
                 </tr>
               )) : (
                 <tr>
@@ -211,7 +242,7 @@ export const FinancialPublicSummary: React.FC = () => {
                   <td className="p-3 text-right text-gray-700">₱{row.monetary.toLocaleString()}</td>
                   <td className="p-3 text-right text-gray-700">{row.nonMonetary}</td>
                   <td className="p-3 text-right text-red-600">₱{row.cashout.toLocaleString()}</td>
-                  <td className="p-3 text-right text-green-700 font-semibold">₱{row.net.toLocaleString()}</td>
+                  <td className="p-3 text-right text-green-700 font-semibold text-2xl">₱{row.net.toLocaleString()}</td>
                 </tr>
               )) : (
                 <tr>
