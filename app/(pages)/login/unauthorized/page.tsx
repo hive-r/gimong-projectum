@@ -3,6 +3,7 @@
 import { ShieldAlert } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import ChatbotWidget from "@/components/chatbot/ChatbotWidget";
 
 export default function UnauthorizedPage() {
   const router = useRouter();
@@ -33,6 +34,7 @@ export default function UnauthorizedPage() {
       </div>
 
       <p className="mt-8 text-gray-400 text-sm">© 2025 Church Admin Panel</p>
+      <ChatbotWidget />
     </div>
   );
 }

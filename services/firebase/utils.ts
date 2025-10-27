@@ -150,3 +150,19 @@ export async function getDocumentById<T = DocumentData>(
 
   return docSnap.data() as T;
 }
+
+const SETTINGS_COLLECTION = "adminSettings";
+
+export async function getChatbotSetting(): Promise<boolean> {
+  const docRef = doc(db, SETTINGS_COLLECTION, "chatbot");
+  const docSnap = await getDoc(docRef);
+  if (docSnap.exists()) {
+    return docSnap.data().enabled ?? true;
+  }
+  return true; // default
+}
+
+export async function setChatbotSetting(enabled: boolean) {
+  const docRef = doc(db, SETTINGS_COLLECTION, "chatbot");
+  await setDoc(docRef, { enabled }, { merge: true });
+}

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   HomeIcon,
   FileTextIcon,
@@ -15,6 +15,7 @@ import { useRouter } from "next/navigation";
 import { auth } from "@/services/firebase/config";
 
 import { ProtectedRoute } from "@/services/firebase/components/protectedRoute";
+import { getChatbotSetting, setChatbotSetting } from "@/services/firebase/utils";
 
 import { AnnouncementEventStatistics } from "@/features/announcements_and_events_record_management/components/announcementEventStatistics";
 import { AnnouncementEventCard } from "@/features/announcements_and_events_record_management/components/card";
@@ -36,16 +37,33 @@ type Tab = "dashboard" | "event" | "finance" | "member" | "inventory";
 
 export default function AdminPage() {
   const [activeTab, setActiveTab] = useState<Tab>("dashboard");
+  const [chatbotEnabled, setChatbotEnabled] = useState<boolean>(true);
   const router = useRouter();
-  
+
+  // Fetch chatbot setting from Firebase on mount
+  useEffect(() => {
+    async function fetchChatbot() {
+      const enabled = await getChatbotSetting();
+      setChatbotEnabled(enabled);
+    }
+    fetchChatbot();
+  }, []);
+
+  const toggleChatbot = async () => {
+    const newValue = !chatbotEnabled;
+    setChatbotEnabled(newValue);
+    await setChatbotSetting(newValue); // save to Firestore
+    toast.success(`Chatbot ${newValue ? "enabled" : "disabled"}`);
+  };
+
   const handleLogout = async () => {
     try {
       await signOut(auth);
-      toast.success("You’ve successfully logged out."); // ✅ success toast
+      toast.success("You’ve successfully logged out.");
       router.push("/login");
     } catch (error) {
       console.error("Error signing out:", error);
-      toast.error("Failed to log out. Please try again."); // ❌ error toast
+      toast.error("Failed to log out. Please try again.");
     }
   };
 
@@ -62,7 +80,7 @@ export default function AdminPage() {
       <div className="flex h-screen bg-gray-50 overflow-hidden">
         {/* Sidebar */}
         <aside className="w-72 bg-white border-r border-gray-200 p-6 flex flex-col sticky top-0 h-screen shadow-sm">
-          <div className="mb-12">
+          <div className="mb-8">
             <h2 className="text-3xl font-bold text-gray-800 text-center">
               Admin Panel
             </h2>
@@ -93,12 +111,27 @@ export default function AdminPage() {
             ))}
           </nav>
 
-          {/* Logout Button */}
+          {/* Chatbot Toggle */}
+          <div
+            className="flex items-center justify-between mt-6 p-3 rounded-lg bg-gray-100 cursor-pointer"
+            onClick={toggleChatbot}
+          >
+            <span className="text-gray-800 font-medium">Chatbot</span>
+            <div
+              className={`w-12 h-6 flex items-center rounded-full p-1 duration-300 ease-in-out ${
+                chatbotEnabled ? "bg-primary justify-end" : "bg-gray-400 justify-start"
+              }`}
+            >
+              <div className="bg-white w-4 h-4 rounded-full shadow-md"></div>
+            </div>
+          </div>
+
+          {/* Logout */}
           <div className="mt-auto">
             <button
               onClick={handleLogout}
               className="flex items-center justify-center gap-3 w-full py-3 mt-6 text-red-600 hover:text-white hover:bg-red-600 rounded-lg font-semibold transition-colors duration-200"
-              >
+            >
               <LogOutIcon className="w-5 h-5" />
               Logout
             </button>

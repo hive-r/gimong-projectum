@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import SectionHeader from "@/modules/components/sectionHeader";
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
+import ChatbotWidget from "@/components/chatbot/ChatbotWidget";
 
 export default function ContactPage() {
   const [form, setForm] = useState({ name: "", email: "", message: "" });
@@ -140,6 +141,7 @@ export default function ContactPage() {
       </main>
 
       {/* 🔹 Footer */}
+            <ChatbotWidget />
       <Footer />
     </div>
   );
