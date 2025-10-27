@@ -70,7 +70,7 @@ export default function LoginPage() {
       <Navbar />
 
       {/* 🔹 Main Content */}
-      <main className="relative z-10 flex flex-1 items-center justify-center px-6 py-12">
+      <main className="relative z-10 mt-25 mb-20 flex flex-1 items-center justify-center px-6 py-12">
         <div className="bg-white/80 backdrop-blur-xl shadow-xl rounded-2xl p-10 w-full max-w-md transition-all duration-300 hover:shadow-2xl">
           <h1 className="text-3xl font-extrabold text-center text-teal-900 mb-6 tracking-tight">
             Church Admin Login
