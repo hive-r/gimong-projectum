@@ -16,9 +16,22 @@ import {
 } from "@/components/ui/card";
 import SectionHeader from "@/modules/components/sectionHeader";
 
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import Image from "next/image";
+
 export const AnnouncementEventCardPublic: React.FC = () => {
   const [announcements, setAnnouncements] = useState<AnnouncementRecord[]>([]);
   const [events, setEvents] = useState<EventRecord[]>([]);
+
+  const [selectedRecord, setSelectedRecord] = useState<EventRecord | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [mode, setMode] = useState<"view" | "edit">("view");
 
   // 🔹 Real-time listeners
   useEffect(() => {
@@ -30,6 +43,13 @@ export const AnnouncementEventCardPublic: React.FC = () => {
     const unsubscribe = listenToEvents(setEvents);
     return () => unsubscribe();
   }, []);
+
+  // 🔹 Open dialog when user clicks on an event card
+  const handleViewEvent = (event: EventRecord) => {
+    setSelectedRecord(event);
+    setMode("view");
+    setDialogOpen(true);
+  };
 
   return (
     <section id="announcements" className="relative py-20 px-6 md:px-12 bg-linear-to-b from-white via-gray-50 to-gray-100 overflow-hidden">
@@ -100,7 +120,11 @@ export const AnnouncementEventCardPublic: React.FC = () => {
               {events.filter((e) => !e.isArchived).length > 0 ? (
                 events
                   .filter((e) => !e.isArchived)
-                  .map((e) => <EventCard key={e.id} event={e} />)
+                  .map((e) => (
+                    <div key={e.id} onClick={() => handleViewEvent(e)}>
+                      <EventCard event={e} />
+                    </div>
+                  ))
               ) : (
                 <p className="text-center text-gray-500 mt-6">
                   No events scheduled right now. Stay tuned for upcoming gatherings!
@@ -110,6 +134,40 @@ export const AnnouncementEventCardPublic: React.FC = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Dialog for viewing selected event */}
+      {selectedRecord && selectedRecord?.type === "event" && (
+        <Dialog open={dialogOpen && mode === "view"} onOpenChange={setDialogOpen}>
+          <DialogContent className="sm:max-w-[800px]">
+            <DialogHeader>
+              <DialogTitle>View Event</DialogTitle>
+              <DialogDescription>Here are the details of the selected event.</DialogDescription>
+            </DialogHeader>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch h-full">
+              <div className="w-full h-[350px] flex justify-center items-center">
+                {selectedRecord.imageUrl ? (
+                  <Image
+                    src={selectedRecord.imageUrl}
+                    alt="Event"
+                    width={700}
+                    height={350}
+                    className="w-full h-full object-cover rounded-md shadow-md"
+                    priority={true}
+                  />
+                ) : (
+                  <div className="w-full h-[350px] flex items-center justify-center border border-dashed text-gray-400">
+                    No Image
+                  </div>
+                )}
+              </div>
+              <div className="h-full">
+                <EventCard event={selectedRecord as EventRecord} />
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
     </section>
   );
 };

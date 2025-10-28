@@ -19,6 +19,9 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
+import { storage } from "@/services/appwrite/config"; // your Appwrite storage instance
+import { ID } from "appwrite";
+
 type FormInput = Omit<
   EventRecord,
   "id" | "dateCreated" | "type" | "status" | "isArchived" | "dateArchived"
@@ -46,16 +49,32 @@ export const EventForm: React.FC = () => {
   const watchedStartTime = watch("startTime");
   const watchedEndDate = watch("endDate");
   const watchedEndTime = watch("endTime");
+  const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
 
   const onSubmit: SubmitHandler<FormInput> = async (data) => {
     try {
+      let imageUrl = data.imageUrl;
+
+      if (selectedFile) {
+        const response = await storage.createFile(
+          process.env.NEXT_PUBLIC_APPWRITE_BUCKET_ID!,
+          ID.unique(),
+          selectedFile
+        );
+
+        imageUrl = `${process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT}/storage/buckets/${response.bucketId}/files/${response.$id}/view?project=${process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID}`;
+      }
+
       await createEvent({
         ...data,
+        imageUrl,
         endDate: data.endDate || "",
         endTime: data.endTime || "",
       });
+
       toast.success("Event created successfully!");
       reset();
+      setSelectedFile(null);
       setStartDate(undefined);
     } catch (err) {
       console.error(err);
@@ -78,8 +97,7 @@ export const EventForm: React.FC = () => {
       return "Start date/time required first";
     const start = new Date(`${watchedStartDate}T${watchedStartTime}`);
     const end = new Date(
-      `${watchedEndDate || watchedStartDate}T${
-        watchedEndTime || watchedStartTime
+      `${watchedEndDate || watchedStartDate}T${watchedEndTime || watchedStartTime
       }`
     );
     if (end < start) return "End date/time cannot be before start date/time";
@@ -111,7 +129,7 @@ export const EventForm: React.FC = () => {
         <textarea
           placeholder="Enter event description"
           {...register("description", { required: "Description is required" })}
-          className="border rounded p-2 min-h-[80px]"
+          className="border rounded p-2 min-h-20"
         />
         {errors.description && (
           <p className="text-red-500 text-sm">{errors.description.message}</p>
@@ -134,19 +152,37 @@ export const EventForm: React.FC = () => {
 
       {/* Image URL & Link */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Image URL + Upload */}
         <div className="flex flex-col gap-1.5">
           <Label>Image URL</Label>
           <Input
             placeholder="https://example.com/image.jpg"
             {...register("imageUrl", {
-              required: "Image URL is required",
               pattern: urlPattern,
             })}
           />
           {errors.imageUrl && (
             <p className="text-red-500 text-sm">{errors.imageUrl.message}</p>
           )}
+
+          {/* Upload Button */}
+          <Label>Or Upload Image</Label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => {
+              if (e.target.files && e.target.files[0]) {
+                setSelectedFile(e.target.files[0]); // store file for deferred upload
+              }
+            }}
+            className="border rounded p-2"
+          />
+          <p className="text-sm text-gray-500">
+            Select an image to upload when creating the event
+          </p>
         </div>
+
+        {/* Link */}
         <div className="flex flex-col gap-1.5">
           <Label>Link (optional)</Label>
           <Input
@@ -158,6 +194,7 @@ export const EventForm: React.FC = () => {
           )}
         </div>
       </div>
+
 
       {/* Dates & Times */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
