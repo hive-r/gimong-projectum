@@ -11,6 +11,7 @@ import { AnnouncementRecord } from "./types/announcement";
 import { EventRecord, EventStatus } from "./types/event";
 import { computeEventStatus } from "@/features/announcements_and_events_record_management/utils/computeEventStatus";
 import { deleteField } from "firebase/firestore";
+import { storage } from "@/services/appwrite/config";
 
 const ANNOUNCEMENTS_COLLECTION = "announcements";
 const EVENTS_COLLECTION = "events";
@@ -22,6 +23,27 @@ function removeUndefined<T extends object>(obj: T): T { // FIXED TYPE CONSTRAINT
   return Object.fromEntries(
     Object.entries(obj).filter(([, v]) => v !== undefined) // FIXED FILTER LOGIC
   ) as T;
+}
+
+function getFileIdFromUrl(url: string): string | null {
+  // Appwrite file URL pattern:
+  // https://[endpoint]/storage/buckets/{bucketId}/files/{fileId}/view?project=...
+  const match = url.match(/\/files\/([^/]+)\/view/);
+  return match ? match[1] : null;
+}
+
+async function deleteAppwriteFile(url?: string) {
+  if (!url) return;
+  const fileId = getFileIdFromUrl(url);
+  if (!fileId) return;
+  try {
+    await storage.deleteFile(
+      process.env.NEXT_PUBLIC_APPWRITE_BUCKET_ID!,
+      fileId
+    );
+  } catch (err) {
+    console.error("Failed to delete Appwrite file:", err);
+  }
 }
 
 //
@@ -67,6 +89,10 @@ export async function getAnnouncementById(
 }
 
 export async function deleteAnnouncement(id: string): Promise<void> {
+  const doc = await getAnnouncementById(id);
+  if (doc?.imageUrl) {
+    await deleteAppwriteFile(doc.imageUrl);
+  }
   return deleteDocument(ANNOUNCEMENTS_COLLECTION, id);
 }
 
@@ -197,6 +223,10 @@ export async function getEventById(id: string): Promise<EventRecord | null> {
 }
 
 export async function deleteEvent(id: string): Promise<void> {
+  const doc = await getEventById(id);
+  if (doc?.imageUrl) {
+    await deleteAppwriteFile(doc.imageUrl);
+  }
   return deleteDocument(EVENTS_COLLECTION, id);
 }
 
