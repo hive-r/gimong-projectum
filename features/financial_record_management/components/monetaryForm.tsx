@@ -105,8 +105,8 @@ export const MonetaryForm: React.FC = () => {
                 <SelectContent>
                   <SelectGroup>
                     <SelectLabel>Types</SelectLabel>
-                    <SelectItem value="tithe">Offering</SelectItem>
-                    <SelectItem value="offering">Tithe</SelectItem>
+                    <SelectItem value="offering">Offering</SelectItem>
+                    <SelectItem value="tithe">Tithe</SelectItem>
                     <SelectItem value="pledge">Pledge</SelectItem>
                     <SelectItem value="mission fund">Mission Fund</SelectItem>
                     <SelectItem value="barnabas fund">Barnabas Fund</SelectItem>
