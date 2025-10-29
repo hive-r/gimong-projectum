@@ -78,7 +78,7 @@ export const MonetaryForm: React.FC = () => {
 
       {/* Full Name */}
       <div className="flex flex-col gap-1.5">
-        <Label>Donor&apos;s Full Name</Label>
+        <Label>Donor&apos;s Full Name or Description</Label>
         <Input
           placeholder="Enter full name"
           {...register("fullName", { required: "Full name is required" })}
