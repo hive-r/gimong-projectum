@@ -114,12 +114,44 @@ export const MonetaryNonMonetaryList: React.FC = () => {
     return str.charAt(0).toUpperCase() + str.slice(1);
   };
 
-  // Totals for active records
-  const totalMonetary = monetaryRecords
-    .filter((r) => !r.isArchived && typeof r.amount === "number")
-    .reduce((sum, r) => sum + r.amount, 0);
-
   const totalNonMonetary = nonMonetaryRecords.filter((r) => !r.isArchived).length;
+
+  // Filter state
+  const [selectedDonationType, setSelectedDonationType] = useState("");
+
+  // Filtered records logic
+  const filteredMonetaryRecords = monetaryRecords
+    .filter((r) => !r.isArchived)
+    .filter((r) =>
+      selectedDonationType
+        ? r.donationType?.toLowerCase() === selectedDonationType.toLowerCase()
+        : true
+    );
+
+  // ✅ Add this: Compute total for filtered records
+  const totalFilteredMonetary = filteredMonetaryRecords.reduce(
+    (sum, record) => sum + Number(record.amount || 0),
+    0
+  );
+
+  // Donation types state
+  const [donationTypes, setDonationTypes] = useState<{ id: string; name: string }[]>([]);
+
+  // Dynamically extract unique donation types from monetaryRecords
+  useEffect(() => {
+    const uniqueTypes = Array.from(
+      new Set(
+        monetaryRecords
+          .map((r) => r.donationType?.toLowerCase())
+          .filter(Boolean)
+      )
+    ).map((type) => ({
+      id: type,
+      name: type.charAt(0).toUpperCase() + type.slice(1),
+    }));
+
+    setDonationTypes(uniqueTypes);
+  }, [monetaryRecords]);
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
@@ -151,11 +183,39 @@ export const MonetaryNonMonetaryList: React.FC = () => {
           <TabsContent value="monetary">
             <Card>
               <CardHeader>
-                <CardTitle className="text-2xl uppercase">Monetary Records</CardTitle>
-                <CardDescription className="text-lg">All monetary contributions.</CardDescription>
+                <div className="flex justify-between items-center">
+                  <div>
+                    <CardTitle className="text-2xl uppercase">Monetary Records</CardTitle>
+                    <CardDescription className="text-lg">
+                      All monetary contributions.
+                    </CardDescription>
+                  </div>
+
+                  {/* 🔹 Donation Type Filter */}
+                  <div className="flex items-center gap-2">
+                    <label htmlFor="donationTypeFilter" className="text-sm text-gray-600">
+                      Filter:
+                    </label>
+                    <select
+                      id="donationTypeFilter"
+                      className="border border-gray-300 rounded-md px-2 py-1 text-sm"
+                      value={selectedDonationType}
+                      onChange={(e) => setSelectedDonationType(e.target.value)}
+                    >
+                      <option value="">All</option>
+                      {donationTypes.map((type) => (
+                        <option key={type.id} value={type.id}>
+                          {type.name}
+                        </option>
+                      ))}
+                    </select>
+
+                  </div>
+                </div>
               </CardHeader>
+
               <CardContent>
-                {monetaryRecords.filter((r) => !r.isArchived).length > 0 ? (
+                {filteredMonetaryRecords.length > 0 ? (
                   <Table>
                     <TableHeader>
                       <TableRow>
@@ -167,26 +227,29 @@ export const MonetaryNonMonetaryList: React.FC = () => {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {monetaryRecords
-                        .filter((r) => !r.isArchived)
-                        .map((record) => (
-                          <TableRow key={record.id}>
-                            <TableCell>{record.fullName}</TableCell>
-                            <TableCell>{toSentenceCase(record.donationType)}</TableCell>
-                            <TableCell>
-                              {record.amount} {record.currency}
-                            </TableCell>
-                            <TableCell>
-                              {new Date(record.dateCreated).toLocaleDateString()}
-                            </TableCell>
-                            <TableCell>{renderActions(record)}</TableCell>
-                          </TableRow>
-                        ))}
+                      {filteredMonetaryRecords.map((record) => (
+                        <TableRow key={record.id}>
+                          <TableCell>{record.fullName}</TableCell>
+                          <TableCell>{toSentenceCase(record.donationType)}</TableCell>
+                          <TableCell>
+  {record.currency === "PHP" ? "₱" : ""}
+  {Number(record.amount).toLocaleString("en-PH", { minimumFractionDigits: 2 })}
+  {record.currency !== "PHP" ? ` ${record.currency}` : ""}
+</TableCell>
+
+                          <TableCell>
+                            {new Date(record.dateCreated).toLocaleDateString()}
+                          </TableCell>
+                          <TableCell>{renderActions(record)}</TableCell>
+                        </TableRow>
+                      ))}
+
                       {/* Totals row */}
                       <TableRow className="font-bold border-t border-gray-300">
                         <TableCell>Total</TableCell>
-                        <TableCell>-</TableCell>
-                        <TableCell>{totalMonetary}</TableCell>
+                        <TableCell>-</TableCell><TableCell>
+  ₱{totalFilteredMonetary.toLocaleString("en-PH", { minimumFractionDigits: 2 })}
+</TableCell>  
                         <TableCell>-</TableCell>
                         <TableCell>-</TableCell>
                       </TableRow>
@@ -194,7 +257,7 @@ export const MonetaryNonMonetaryList: React.FC = () => {
                   </Table>
                 ) : (
                   <p className="text-center text-gray-500 mt-4">
-                    No monetary records.
+                    No monetary records found.
                   </p>
                 )}
               </CardContent>
