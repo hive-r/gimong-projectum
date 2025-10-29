@@ -138,34 +138,82 @@ export const InventoryList: React.FC = () => {
     </div>
   );
 
+  // 🔹 Pagination Logic
+  const ITEMS_PER_PAGE = 10;
+  const [page, setPage] = useState(1);
+
+  const paginate = (items: InventoryItem[]) => {
+    const start = (page - 1) * ITEMS_PER_PAGE;
+    return items.slice(start, start + ITEMS_PER_PAGE);
+  };
+
   const sermons = inventoryItems.filter(i => !i.isArchived && i.category === "sermon");
   const devotionals = inventoryItems.filter(i => !i.isArchived && i.category === "devotional");
   const archivedItems = inventoryItems.filter(i => i.isArchived);
 
+  const totalPages = (items: InventoryItem[]) =>
+    Math.ceil(items.length / ITEMS_PER_PAGE);
+
+  const renderPagination = (items: InventoryItem[]) => {
+    if (items.length <= ITEMS_PER_PAGE) return null;
+
+    const total = totalPages(items);
+
+    return (
+      <div className="flex justify-center gap-4 mt-4">
+        <Button
+          variant="outline"
+          disabled={page === 1}
+          onClick={() => setPage((p) => Math.max(p - 1, 1))}
+        >
+          Previous
+        </Button>
+        <span className="text-sm text-gray-600">
+          Page {page} of {total}
+        </span>
+        <Button
+          variant="outline"
+          disabled={page === total}
+          onClick={() => setPage((p) => Math.min(p + 1, total))}
+        >
+          Next
+        </Button>
+      </div>
+    );
+  };
+
   const renderTable = (items: InventoryItem[], showCategory = true, useButtons = false) =>
     items.length > 0 ? (
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Title</TableHead>
-            <TableHead>Description</TableHead>
-            {showCategory && <TableHead>Category</TableHead>}
-            <TableHead>Date Uploaded</TableHead>
-            <TableHead>Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {items.map(item => (
-            <TableRow key={item.firestoreId ?? item.appwriteId}>
-              <TableCell>{item.name}</TableCell>
-              <TableCell>{item.description.slice(0, 50)}{item.description.length > 50 ? "..." : ""}</TableCell>
-              {showCategory && <TableCell>{item.category}</TableCell>}
-              <TableCell>{new Date(item.uploadedAt).toLocaleDateString()}</TableCell>
-              <TableCell>{useButtons ? renderButtonActions(item) : renderDropdownActions(item)}</TableCell>
+      <>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Title</TableHead>
+              <TableHead>Description</TableHead>
+              {showCategory && <TableHead>Category</TableHead>}
+              <TableHead>Date Uploaded</TableHead>
+              <TableHead>Actions</TableHead>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+          </TableHeader>
+          <TableBody>
+            {paginate(items).map(item => (
+              <TableRow key={item.firestoreId ?? item.appwriteId}>
+                <TableCell>{item.name}</TableCell>
+                <TableCell>
+                  {item.description.slice(0, 50)}
+                  {item.description.length > 50 ? "..." : ""}
+                </TableCell>
+                {showCategory && <TableCell>{item.category}</TableCell>}
+                <TableCell>{new Date(item.uploadedAt).toLocaleDateString()}</TableCell>
+                <TableCell>
+                  {useButtons ? renderButtonActions(item) : renderDropdownActions(item)}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+        {renderPagination(items)}
+      </>
     ) : (
       <p className="text-center text-gray-500 mt-4">No items found.</p>
     );
@@ -174,10 +222,10 @@ export const InventoryList: React.FC = () => {
     <div className="p-6 bg-gray-100 min-h-screen">
       <h1 className="text-4xl font-bold mb-6 text-center uppercase">Resource List</h1>
       <div className="flex w-full max-w-5xl mx-auto flex-col gap-4">
-        <Tabs defaultValue="sermon" className="w-full">
+        <Tabs defaultValue="sermon" className="w-full" onValueChange={() => setPage(1)}>
           <TabsList className="grid w-full grid-cols-3 bg-primary">
             <TabsTrigger value="sermon" className="flex items-center gap-2 text-gray-700">
-              <BookOpenIcon  className="h-4 w-4" />
+              <BookOpenIcon className="h-4 w-4" />
               Sermons
             </TabsTrigger>
             <TabsTrigger value="devotional" className="flex items-center gap-2 text-gray-700">
@@ -225,16 +273,13 @@ export const InventoryList: React.FC = () => {
       {/* 🔹 View Dialog */}
       <Dialog open={viewDialogOpen} onOpenChange={setViewDialogOpen}>
         <DialogContent className="sm:max-w-[400px]">
-            <DialogHeader>
+          <DialogHeader>
             <DialogTitle>View Item</DialogTitle>
             <DialogDescription>Item details overview.</DialogDescription>
-            </DialogHeader>
-
-            {selectedItem && (
-            <InventoryCard item={selectedItem} />
-            )}
+          </DialogHeader>
+          {selectedItem && <InventoryCard item={selectedItem} />}
         </DialogContent>
-        </Dialog>
+      </Dialog>
 
       {/* Delete Confirmation */}
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
@@ -242,12 +287,18 @@ export const InventoryList: React.FC = () => {
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete {itemToDelete?.name}.
+              This action cannot be undone. This will permanently delete{" "}
+              {itemToDelete?.name}.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setDeleteDialogOpen(false)}>Cancel</AlertDialogCancel>
-            <AlertDialogAction className="bg-red-600 hover:bg-red-700" onClick={confirmDelete}>
+            <AlertDialogCancel onClick={() => setDeleteDialogOpen(false)}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-red-600 hover:bg-red-700"
+              onClick={confirmDelete}
+            >
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>

@@ -3,48 +3,48 @@
 import React, { useEffect, useState } from "react";
 import { ArchiveIcon, UsersIcon, UserMinus, MoreHorizontal } from "lucide-react";
 import {
-    Tabs,
-    TabsList,
-    TabsTrigger,
-    TabsContent,
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
 } from "@/components/ui/tabs";
 import {
-    Card,
-    CardHeader,
-    CardTitle,
-    CardDescription,
-    CardContent,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
 } from "@/components/ui/card";
 import {
-    Table,
-    TableHeader,
-    TableRow,
-    TableHead,
-    TableBody,
-    TableCell,
+  Table,
+  TableHeader,
+  TableRow,
+  TableHead,
+  TableBody,
+  TableCell,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-    DialogDescription,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import {
-    DropdownMenu,
-    DropdownMenuTrigger,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 
 import { MembershipProfile } from "../types";
 import {
-    listenToMemberships,
-    toggleArchiveMembership,
+  listenToMemberships,
+  toggleArchiveMembership,
 } from "../service";
 import { MembershipEdit } from "./membershipEdit";
 import { MembershipCard } from "./membershipCard";
@@ -52,277 +52,322 @@ import { MembershipCard } from "./membershipCard";
 type Mode = "edit" | "view" | null;
 
 export const MembershipList: React.FC = () => {
-    const [members, setMembers] = useState<MembershipProfile[]>([]);
-    const [dialogOpen, setDialogOpen] = useState(false);
-    const [selectedMember, setSelectedMember] = useState<MembershipProfile | null>(null);
-    const [mode, setMode] = useState<Mode>(null);
+  const [members, setMembers] = useState<MembershipProfile[]>([]);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [selectedMember, setSelectedMember] = useState<MembershipProfile | null>(null);
+  const [mode, setMode] = useState<Mode>(null);
 
-    // 🔹 Fetch membership data
-    useEffect(() => {
-        const unsubscribe = listenToMemberships(setMembers);
-        return () => unsubscribe();
-    }, []);
+  // Pagination states
+  const [pageSize, setPageSize] = useState(10);
+  const [activePage, setActivePage] = useState(1);
+  const [inactivePage, setInactivePage] = useState(1);
+  const [archivedPage, setArchivedPage] = useState(1);
 
-    // 🔹 Handle Actions
-    async function handleAction(
-        action: "archive" | "unarchive",
-        member: MembershipProfile
-    ) {
-        try {
-            await toggleArchiveMembership(member.id, action === "archive");
-            toast.success(
-                `Member ${action === "archive" ? "archived" : "unarchived"} successfully`
-            );
-        } catch (error) {
-            console.error(error);
-            toast.error(`Failed to ${action} member`);
-        }
+  // 🔹 Fetch membership data
+  useEffect(() => {
+    const unsubscribe = listenToMemberships(setMembers);
+    return () => unsubscribe();
+  }, []);
+
+  // 🔹 Handle Actions
+  async function handleAction(action: "archive" | "unarchive", member: MembershipProfile) {
+    try {
+      await toggleArchiveMembership(member.id, action === "archive");
+      toast.success(
+        `Member ${action === "archive" ? "archived" : "unarchived"} successfully`
+      );
+    } catch (error) {
+      console.error(error);
+      toast.error(`Failed to ${action} member`);
     }
+  }
 
-    const renderActions = (member: MembershipProfile) => (
-        <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="h-8 w-8 p-0">
-                    <span className="sr-only">Open menu</span>
-                    <MoreHorizontal />
-                </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-                <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                    onClick={() => {
-                        setSelectedMember(member);
-                        setMode("edit");
-                        setDialogOpen(true);
-                    }}
-                >
-                    Edit
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                    onClick={() => {
-                        setSelectedMember(member);
-                        setMode("view");
-                        setDialogOpen(true);
-                    }}
-                >
-                    View
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                    onClick={() =>
-                        handleAction(member.isArchived ? "unarchive" : "archive", member)
-                    }
-                >
-                    {member.isArchived ? "Unarchive" : "Archive"}
-                </DropdownMenuItem>
-            </DropdownMenuContent>
-        </DropdownMenu>
-    );
+  const renderActions = (member: MembershipProfile) => (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" className="h-8 w-8 p-0">
+          <span className="sr-only">Open menu</span>
+          <MoreHorizontal />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          onClick={() => {
+            setSelectedMember(member);
+            setMode("edit");
+            setDialogOpen(true);
+          }}
+        >
+          Edit
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={() => {
+            setSelectedMember(member);
+            setMode("view");
+            setDialogOpen(true);
+          }}
+        >
+          View
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={() =>
+            handleAction(member.isArchived ? "unarchive" : "archive", member)
+          }
+        >
+          {member.isArchived ? "Unarchive" : "Archive"}
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
 
-    const activeMembers = members.filter(
-        (m) => !m.isArchived && m.membershipStatus === "active"
-    );
-    const inactiveMembers = members.filter(
-        (m) => !m.isArchived && m.membershipStatus === "inactive"
-    );
-    const archivedMembers = members.filter((m) => m.isArchived);
+  const activeMembers = members.filter((m) => !m.isArchived && m.membershipStatus === "active");
+  const inactiveMembers = members.filter((m) => !m.isArchived && m.membershipStatus === "inactive");
+  const archivedMembers = members.filter((m) => m.isArchived);
+
+  // 🔹 Pagination logic
+  const paginate = <T,>(items: T[], page: number): T[] =>
+  items.slice((page - 1) * pageSize, page * pageSize);
+
+  const renderPagination = (
+    page: number,
+    setPage: React.Dispatch<React.SetStateAction<number>>,
+    totalItems: number
+  ) => {
+    const totalPages = Math.ceil(totalItems / pageSize);
+
+    if (totalPages <= 1) return null;
 
     return (
-        <div className="p-6 bg-gray-100 min-h-screen">
-            <h1 className="text-4xl font-bold mb-6 text-center uppercase">
-                Membership List
-            </h1>
-
-            <div className="max-w-5xl mx-auto">
-                <Tabs defaultValue="active" className="w-full">
-                    <TabsList className="grid w-full grid-cols-3 bg-primary">
-                        <TabsTrigger value="active" className="flex items-center gap-2 text-gray-700">
-                            <UsersIcon className="h-4 w-4" /> Active
-                        </TabsTrigger>
-                        <TabsTrigger value="inactive" className="flex items-center gap-2 text-gray-700">
-                            <UserMinus className="h-4 w-4" /> Inactive
-                        </TabsTrigger>
-                        <TabsTrigger value="archived" className="flex items-center gap-2 text-gray-700">
-                            <ArchiveIcon className="h-4 w-4" /> Archived
-                        </TabsTrigger>
-                    </TabsList>
-
-                    {/* 🟢 Active Members */}
-                    <TabsContent value="active">
-                        <Card>
-                            <CardHeader>
-                                <CardTitle className="text-2xl uppercase">Active Members</CardTitle>
-                                <CardDescription className="text-lg">Currently active church members</CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                {activeMembers.length > 0 ? (
-                                    <Table>
-                                        <TableHeader>
-                                            <TableRow>
-                                                <TableHead>Name</TableHead>
-                                                <TableHead>Sex</TableHead>
-                                                <TableHead>Marital Status</TableHead>
-                                                <TableHead>Membership Status</TableHead>
-                                                <TableHead>Date Created</TableHead>
-                                                <TableHead>Actions</TableHead>
-                                            </TableRow>
-                                        </TableHeader>
-                                        <TableBody>
-                                            {activeMembers.map((m) => (
-                                                <TableRow key={m.id}>
-                                                    <TableCell>
-                                                        {m.firstName} {m.lastName}
-                                                    </TableCell>
-                                                    <TableCell className="capitalize">{m.sex}</TableCell>
-                                                    <TableCell className="capitalize">
-                                                        {m.maritalStatus}
-                                                    </TableCell>
-                                                    <TableCell className="capitalize">
-                                                        {m.membershipStatus}
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        {new Date(m.dateCreated).toLocaleDateString()}
-                                                    </TableCell>
-                                                    <TableCell>{renderActions(m)}</TableCell>
-                                                </TableRow>
-                                            ))}
-                                        </TableBody>
-                                    </Table>
-                                ) : (
-                                    <p className="text-center text-gray-500 mt-4">
-                                        No active members.
-                                    </p>
-                                )}
-                            </CardContent>
-                        </Card>
-                    </TabsContent>
-
-                    {/* 🟠 Inactive Members */}
-                    <TabsContent value="inactive">
-                        <Card>
-                            <CardHeader>
-                                <CardTitle className="text-2xl uppercase">Inactive Members</CardTitle>
-                                <CardDescription className="text-lg">Members currently marked as inactive</CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                {inactiveMembers.length > 0 ? (
-                                    <Table>
-                                        <TableHeader>
-                                            <TableRow>
-                                                <TableHead>Name</TableHead>
-                                                <TableHead>Membership Status</TableHead>
-                                                <TableHead>Date Inactive</TableHead>
-                                                <TableHead>Actions</TableHead>
-                                            </TableRow>
-                                        </TableHeader>
-                                        <TableBody>
-                                            {inactiveMembers.map((m) => (
-                                                <TableRow key={m.id}>
-                                                    <TableCell>
-                                                        {m.firstName} {m.lastName}
-                                                    </TableCell>
-                                                    <TableCell className="capitalize">
-                                                        {m.membershipStatus}
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        {m.dateUpdated
-                                                            ? new Date(m.dateUpdated).toLocaleDateString()
-                                                            : "N/A"}
-                                                    </TableCell>
-                                                    <TableCell>{renderActions(m)}</TableCell>
-                                                </TableRow>
-                                            ))}
-                                        </TableBody>
-                                    </Table>
-                                ) : (
-                                    <p className="text-center text-gray-500 mt-4">
-                                        No inactive members.
-                                    </p>
-                                )}
-                            </CardContent>
-                        </Card>
-                    </TabsContent>
-
-                    {/* 📦 Archived Members */}
-                    <TabsContent value="archived">
-                        <Card>
-                            <CardHeader>
-                                <CardTitle className="text-2xl uppercase">Archived Members</CardTitle>
-                                <CardDescription className="text-lg">Inactive or archived member records</CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                {archivedMembers.length > 0 ? (
-                                    <Table>
-                                        <TableHeader>
-                                            <TableRow>
-                                                <TableHead>Name</TableHead>
-                                                <TableHead>Date Archived</TableHead>
-                                                <TableHead>Actions</TableHead>
-                                            </TableRow>
-                                        </TableHeader>
-                                        <TableBody>
-                                            {archivedMembers.map((m) => (
-                                                <TableRow key={m.id}>
-                                                    <TableCell>
-                                                        {m.firstName} {m.lastName}
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        {m.dateArchived
-                                                            ? new Date(m.dateArchived).toLocaleDateString()
-                                                            : "N/A"}
-                                                    </TableCell>
-                                                    <TableCell className="flex gap-2">
-                                                        <Button
-                                                            variant="outline"
-                                                            size="sm"
-                                                            onClick={() => handleAction("unarchive", m)}
-                                                        >
-                                                            Unarchive
-                                                        </Button>
-                                                    </TableCell>
-                                                </TableRow>
-                                            ))}
-                                        </TableBody>
-                                    </Table>
-                                ) : (
-                                    <p className="text-center text-gray-500 mt-4">
-                                        No archived members.
-                                    </p>
-                                )}
-                            </CardContent>
-                        </Card>
-                    </TabsContent>
-                </Tabs>
-            </div>
-
-            {/* 🔹 Edit Dialog */}
-            <Dialog open={dialogOpen && mode === "edit"} onOpenChange={setDialogOpen}>
-                <DialogContent className="sm:max-w-[800px]">
-                    <DialogHeader>
-                        <DialogTitle>Edit Member</DialogTitle>
-                        <DialogDescription>Update member details below.</DialogDescription>
-                    </DialogHeader>
-
-                    {selectedMember && (
-                        <MembershipEdit
-                            record={selectedMember}
-                            onClose={() => setDialogOpen(false)}
-                        />
-                    )}
-                </DialogContent>
-            </Dialog>
-
-            {/* 🔹 View Dialog */}
-            <Dialog open={dialogOpen && mode === "view"} onOpenChange={setDialogOpen}>
-                <DialogContent className="sm:max-w-[400px]">
-                    <DialogHeader>
-                        <DialogTitle>View Member</DialogTitle>
-                        <DialogDescription>Member details overview.</DialogDescription>
-                    </DialogHeader>
-
-                    {selectedMember && <MembershipCard member={selectedMember} />}
-                </DialogContent>
-            </Dialog>
+      <div className="flex justify-between items-center mt-4 text-sm">
+        <div className="flex items-center gap-2">
+          <span>Rows per page:</span>
+          <select
+            className="border rounded px-2 py-1"
+            value={pageSize}
+            onChange={(e) => setPageSize(Number(e.target.value))}
+          >
+            {[5, 10, 20].map((size) => (
+              <option key={size} value={size}>
+                {size}
+              </option>
+            ))}
+          </select>
         </div>
+
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={page === 1}
+            onClick={() => setPage((p) => p - 1)}
+          >
+            Previous
+          </Button>
+          <span>
+            Page {page} of {totalPages}
+          </span>
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={page === totalPages}
+            onClick={() => setPage((p) => p + 1)}
+          >
+            Next
+          </Button>
+        </div>
+      </div>
     );
+  };
+
+  return (
+    <div className="p-6 bg-gray-100 min-h-screen">
+      <h1 className="text-4xl font-bold mb-6 text-center uppercase">
+        Membership List
+      </h1>
+
+      <div className="max-w-5xl mx-auto">
+        <Tabs defaultValue="active" className="w-full">
+          <TabsList className="grid w-full grid-cols-3 bg-primary">
+            <TabsTrigger value="active" className="flex items-center gap-2 text-gray-700">
+              <UsersIcon className="h-4 w-4" /> Active
+            </TabsTrigger>
+            <TabsTrigger value="inactive" className="flex items-center gap-2 text-gray-700">
+              <UserMinus className="h-4 w-4" /> Inactive
+            </TabsTrigger>
+            <TabsTrigger value="archived" className="flex items-center gap-2 text-gray-700">
+              <ArchiveIcon className="h-4 w-4" /> Archived
+            </TabsTrigger>
+          </TabsList>
+
+          {/* 🟢 Active Members */}
+          <TabsContent value="active">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-2xl uppercase">Active Members</CardTitle>
+                <CardDescription className="text-lg">Currently active church members</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {activeMembers.length > 0 ? (
+                  <>
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Name</TableHead>
+                          <TableHead>Sex</TableHead>
+                          <TableHead>Marital Status</TableHead>
+                          <TableHead>Status</TableHead>
+                          <TableHead>Date Created</TableHead>
+                          <TableHead>Actions</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {paginate(activeMembers, activePage).map((m) => (
+                          <TableRow key={m.id}>
+                            <TableCell>
+                              {m.firstName} {m.lastName}
+                            </TableCell>
+                            <TableCell className="capitalize">{m.sex}</TableCell>
+                            <TableCell className="capitalize">{m.maritalStatus}</TableCell>
+                            <TableCell className="capitalize">{m.membershipStatus}</TableCell>
+                            <TableCell>{new Date(m.dateCreated).toLocaleDateString()}</TableCell>
+                            <TableCell>{renderActions(m)}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                    {renderPagination(activePage, setActivePage, activeMembers.length)}
+                  </>
+                ) : (
+                  <p className="text-center text-gray-500 mt-4">No active members.</p>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* 🟠 Inactive Members */}
+          <TabsContent value="inactive">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-2xl uppercase">Inactive Members</CardTitle>
+                <CardDescription className="text-lg">Members currently marked as inactive</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {inactiveMembers.length > 0 ? (
+                  <>
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Name</TableHead>
+                          <TableHead>Status</TableHead>
+                          <TableHead>Date Inactive</TableHead>
+                          <TableHead>Actions</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {paginate(inactiveMembers, inactivePage).map((m) => (
+                          <TableRow key={m.id}>
+                            <TableCell>
+                              {m.firstName} {m.lastName}
+                            </TableCell>
+                            <TableCell className="capitalize">{m.membershipStatus}</TableCell>
+                            <TableCell>
+                              {m.dateUpdated
+                                ? new Date(m.dateUpdated).toLocaleDateString()
+                                : "N/A"}
+                            </TableCell>
+                            <TableCell>{renderActions(m)}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                    {renderPagination(inactivePage, setInactivePage, inactiveMembers.length)}
+                  </>
+                ) : (
+                  <p className="text-center text-gray-500 mt-4">No inactive members.</p>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* 📦 Archived Members */}
+          <TabsContent value="archived">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-2xl uppercase">Archived Members</CardTitle>
+                <CardDescription className="text-lg">Archived or inactive records</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {archivedMembers.length > 0 ? (
+                  <>
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Name</TableHead>
+                          <TableHead>Date Archived</TableHead>
+                          <TableHead>Actions</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {paginate(archivedMembers, archivedPage).map((m) => (
+                          <TableRow key={m.id}>
+                            <TableCell>
+                              {m.firstName} {m.lastName}
+                            </TableCell>
+                            <TableCell>
+                              {m.dateArchived
+                                ? new Date(m.dateArchived).toLocaleDateString()
+                                : "N/A"}
+                            </TableCell>
+                            <TableCell>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleAction("unarchive", m)}
+                              >
+                                Unarchive
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                    {renderPagination(archivedPage, setArchivedPage, archivedMembers.length)}
+                  </>
+                ) : (
+                  <p className="text-center text-gray-500 mt-4">No archived members.</p>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+      </div>
+
+      {/* 🔹 Edit Dialog */}
+      <Dialog open={dialogOpen && mode === "edit"} onOpenChange={setDialogOpen}>
+        <DialogContent className="sm:max-w-[800px]">
+          <DialogHeader>
+            <DialogTitle>Edit Member</DialogTitle>
+            <DialogDescription>Update member details below.</DialogDescription>
+          </DialogHeader>
+
+          {selectedMember && (
+            <MembershipEdit record={selectedMember} onClose={() => setDialogOpen(false)} />
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* 🔹 View Dialog */}
+      <Dialog open={dialogOpen && mode === "view"} onOpenChange={setDialogOpen}>
+        <DialogContent className="sm:max-w-[400px]">
+          <DialogHeader>
+            <DialogTitle>View Member</DialogTitle>
+            <DialogDescription>Member details overview.</DialogDescription>
+          </DialogHeader>
+          {selectedMember && <MembershipCard member={selectedMember} />}
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
 };

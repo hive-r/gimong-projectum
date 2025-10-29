@@ -86,14 +86,19 @@ export const AnnouncementEventList: React.FC = () => {
     AnnouncementRecord | EventRecord | null
   >(null);
 
-  useEffect(() => {
-    const unsubscribe = listenToAnnouncements(setAnnouncements);
-    return () => unsubscribe();
-  }, []);
+  // 🔹 Pagination States
+  const itemsPerPage = 10;
+  const [announcementPage, setAnnouncementPage] = useState(1);
+  const [eventPage, setEventPage] = useState(1);
+  const [archivePage, setArchivePage] = useState(1);
 
   useEffect(() => {
-    const unsubscribe = listenToEvents(setEvents);
-    return () => unsubscribe();
+    const unsubA = listenToAnnouncements(setAnnouncements);
+    const unsubE = listenToEvents(setEvents);
+    return () => {
+      unsubA();
+      unsubE();
+    };
   }, []);
 
   // 🔹 Centralized action handler
@@ -129,7 +134,6 @@ export const AnnouncementEventList: React.FC = () => {
           );
           return;
         }
-
         await toggleArchiveRecord(
           record.type === "announcement" ? "announcements" : "events",
           record.id,
@@ -160,9 +164,7 @@ export const AnnouncementEventList: React.FC = () => {
     try {
       if (recordToDelete.type === "announcement") {
         await deleteAnnouncement(recordToDelete.id);
-        setAnnouncements((prev) =>
-          prev.filter((a) => a.id !== recordToDelete.id)
-        );
+        setAnnouncements((prev) => prev.filter((a) => a.id !== recordToDelete.id));
       } else {
         await deleteEvent(recordToDelete.id);
         setEvents((prev) => prev.filter((e) => e.id !== recordToDelete.id));
@@ -180,6 +182,12 @@ export const AnnouncementEventList: React.FC = () => {
   function capitalize(text: string) {
     return text.charAt(0).toUpperCase() + text.slice(1);
   }
+
+  // 🔹 Pagination helper
+  const paginate = <T,>(data: T[], page: number) => {
+    const start = (page - 1) * itemsPerPage;
+    return data.slice(start, start + itemsPerPage);
+  };
 
   // 🔹 Dropdown menu for actions
   const renderActions = (record: AnnouncementRecord | EventRecord) => (
@@ -227,6 +235,43 @@ export const AnnouncementEventList: React.FC = () => {
     </DropdownMenu>
   );
 
+  // 🔹 Pagination Controls
+  const PaginationControls = ({
+    page,
+    total,
+    setPage,
+  }: {
+    page: number;
+    total: number;
+    setPage: (page: number) => void;
+  }) => (
+    <div className="flex items-center justify-center gap-4 mt-4">
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => setPage(page - 1)}
+        disabled={page === 1}
+      >
+        Previous
+      </Button>
+      <span className="text-sm text-gray-600">
+        Page {page} of {Math.ceil(total / itemsPerPage) || 1}
+      </span>
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => setPage(page + 1)}
+        disabled={page >= Math.ceil(total / itemsPerPage)}
+      >
+        Next
+      </Button>
+    </div>
+  );
+
+  const filteredAnnouncements = announcements.filter((a) => !a.isArchived);
+  const filteredEvents = events.filter((e) => !e.isArchived);
+  const archivedRecords = [...announcements.filter(a => a.isArchived), ...events.filter(e => e.isArchived)];
+
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
       <h1 className="text-4xl font-bold mb-6 text-center uppercase">
@@ -236,125 +281,121 @@ export const AnnouncementEventList: React.FC = () => {
       <div className="flex w-full max-w-5xl mx-auto flex-col gap-6">
         <Tabs defaultValue="announcement" className="w-full">
           <TabsList className="grid w-full grid-cols-3 bg-primary">
-            <TabsTrigger value="announcement" className="flex items-center gap-2 text-gray-700">
-              <AppWindowIcon className="h-4 w-4" />
-              Announcement
+            <TabsTrigger value="announcement" className="text-gray-700 flex items-center gap-2">
+              <AppWindowIcon className="h-4 w-4" /> Announcements
             </TabsTrigger>
-            <TabsTrigger value="event" className="flex items-center gap-2 text-gray-700">
-              <CalendarDaysIcon className="h-4 w-4" />
-              Event
+            <TabsTrigger value="event" className="text-gray-700 flex items-center gap-2">
+              <CalendarDaysIcon className="h-4 w-4" /> Events
             </TabsTrigger>
-            <TabsTrigger value="archive" className="flex items-center gap-2 text-gray-700">
-              <ArchiveIcon className="h-4 w-4" />
-              Archive
+            <TabsTrigger value="archive" className="text-gray-700 flex items-center gap-2">
+              <ArchiveIcon className="h-4 w-4" /> Archived
             </TabsTrigger>
           </TabsList>
 
-          {/* Announcements */}
+          {/* 🔹 Announcements Tab */}
           <TabsContent value="announcement">
             <Card>
               <CardHeader>
                 <CardTitle className="text-2xl uppercase">Announcements</CardTitle>
-                <CardDescription className="text-lg">Available announcements.</CardDescription>
+                <CardDescription>Available announcements</CardDescription>
               </CardHeader>
               <CardContent>
-                {announcements.filter((a) => !a.isArchived).length > 0 ? (
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Title</TableHead>
-                        <TableHead>Description</TableHead>
-                        <TableHead>Date Created</TableHead>
-                        <TableHead>Pinned</TableHead>
-                        <TableHead>Actions</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {announcements
-                        .filter((a) => !a.isArchived)
-                        .map((a) => (
+                {filteredAnnouncements.length > 0 ? (
+                  <>
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Title</TableHead>
+                          <TableHead>Description</TableHead>
+                          <TableHead>Date</TableHead>
+                          <TableHead>Pinned</TableHead>
+                          <TableHead>Actions</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {paginate(filteredAnnouncements, announcementPage).map((a) => (
                           <TableRow key={a.id}>
                             <TableCell>{a.title}</TableCell>
                             <TableCell>{a.description}</TableCell>
-                            <TableCell>
-                              {new Date(a.dateCreated).toLocaleDateString()}
-                            </TableCell>
+                            <TableCell>{new Date(a.dateCreated).toLocaleDateString()}</TableCell>
                             <TableCell>{a.isPinned ? "Yes" : "No"}</TableCell>
                             <TableCell>{renderActions(a)}</TableCell>
                           </TableRow>
                         ))}
-                    </TableBody>
-                  </Table>
+                      </TableBody>
+                    </Table>
+                    <PaginationControls
+                      page={announcementPage}
+                      total={filteredAnnouncements.length}
+                      setPage={setAnnouncementPage}
+                    />
+                  </>
                 ) : (
-                  <p className="text-center text-gray-500 mt-4">
-                    No active announcements.
-                  </p>
+                  <p className="text-center text-gray-500">No announcements.</p>
                 )}
               </CardContent>
             </Card>
           </TabsContent>
 
-          {/* Events */}
+          {/* 🔹 Events Tab */}
           <TabsContent value="event">
             <Card>
               <CardHeader>
                 <CardTitle className="text-2xl uppercase">Events</CardTitle>
-                <CardDescription className="text-lg">Available events.</CardDescription>
+                <CardDescription>Available events</CardDescription>
               </CardHeader>
               <CardContent>
-                {events.filter((e) => !e.isArchived).length > 0 ? (
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Title</TableHead>
-                        <TableHead>Description</TableHead>
-                        <TableHead>Date Created</TableHead>
-                        <TableHead>Pinned</TableHead>
-                        <TableHead>Actions</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {events
-                        .filter((e) => !e.isArchived)
-                        .map((e) => (
+                {filteredEvents.length > 0 ? (
+                  <>
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Title</TableHead>
+                          <TableHead>Description</TableHead>
+                          <TableHead>Date</TableHead>
+                          <TableHead>Pinned</TableHead>
+                          <TableHead>Actions</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {paginate(filteredEvents, eventPage).map((e) => (
                           <TableRow key={e.id}>
                             <TableCell>{e.title}</TableCell>
                             <TableCell>{e.description}</TableCell>
-                            <TableCell>
-                              {new Date(e.dateCreated).toLocaleDateString()}
-                            </TableCell>
+                            <TableCell>{new Date(e.dateCreated).toLocaleDateString()}</TableCell>
                             <TableCell>{e.isPinned ? "Yes" : "No"}</TableCell>
                             <TableCell>{renderActions(e)}</TableCell>
                           </TableRow>
                         ))}
-                    </TableBody>
-                  </Table>
+                      </TableBody>
+                    </Table>
+                    <PaginationControls
+                      page={eventPage}
+                      total={filteredEvents.length}
+                      setPage={setEventPage}
+                    />
+                  </>
                 ) : (
-                  <p className="text-center text-gray-500 mt-4">
-                    No active events.
-                  </p>
+                  <p className="text-center text-gray-500">No events.</p>
                 )}
               </CardContent>
             </Card>
           </TabsContent>
 
-          {/* Archive */}
+          {/* 🔹 Archived Tab */}
           <TabsContent value="archive">
             <Card>
               <CardHeader>
-                <CardTitle className="text-2xl uppercase">Archived Records</CardTitle>
-                <CardDescription className="text-lg">
-                  Announcements and events that were archived.
-                </CardDescription>
+                <CardTitle className="text-2xl uppercase">Archived</CardTitle>
+                <CardDescription>All archived announcements and events</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-6">
-                {/* Archived Announcements */}
-                <div>
-                  <h3 className="text-lg font-semibold mb-2">Announcements</h3>
-                  {announcements.filter((a) => a.isArchived).length > 0 ? (
+              <CardContent>
+                {archivedRecords.length > 0 ? (
+                  <>
                     <Table>
                       <TableHeader>
                         <TableRow>
+                          <TableHead>Type</TableHead>
                           <TableHead>Title</TableHead>
                           <TableHead>Description</TableHead>
                           <TableHead>Date Archived</TableHead>
@@ -362,91 +403,45 @@ export const AnnouncementEventList: React.FC = () => {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {announcements
-                          .filter((a) => a.isArchived)
-                          .map((a) => (
-                            <TableRow key={a.id}>
-                              <TableCell>{a.title}</TableCell>
-                              <TableCell>{a.description}</TableCell>
-                              <TableCell>
-                                {a.dateArchived
-                                  ? new Date(a.dateArchived).toLocaleDateString()
-                                  : "N/A"}
-                              </TableCell>
-                              <TableCell className="flex gap-2">
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => handleRecordAction("unarchive", a)}
-                                >
-                                  Unarchive
-                                </Button>
-                                <Button
-                                  variant="destructive"
-                                  size="sm"
-                                  onClick={() => handleRecordAction("delete", a)}
-                                >
-                                  Delete
-                                </Button>
-                              </TableCell>
-                            </TableRow>
-                          ))}
+                        {paginate(archivedRecords, archivePage).map((r) => (
+                          <TableRow key={r.id}>
+                            <TableCell>{r.type}</TableCell>
+                            <TableCell>{r.title}</TableCell>
+                            <TableCell>{r.description}</TableCell>
+                            <TableCell>
+                              {r.dateArchived
+                                ? new Date(r.dateArchived).toLocaleDateString()
+                                : "N/A"}
+                            </TableCell>
+                            <TableCell className="flex gap-2">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleRecordAction("unarchive", r)}
+                              >
+                                Unarchive
+                              </Button>
+                              <Button
+                                variant="destructive"
+                                size="sm"
+                                onClick={() => handleRecordAction("delete", r)}
+                              >
+                                Delete
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        ))}
                       </TableBody>
                     </Table>
-                  ) : (
-                    <p className="text-gray-500">No archived announcements.</p>
-                  )}
-                </div>
-
-                {/* Archived Events */}
-                <div>
-                  <h3 className="text-lg font-semibold mb-2">Events</h3>
-                  {events.filter((e) => e.isArchived).length > 0 ? (
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Title</TableHead>
-                          <TableHead>Description</TableHead>
-                          <TableHead>Date Archived</TableHead>
-                          <TableHead>Actions</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {events
-                          .filter((e) => e.isArchived)
-                          .map((e) => (
-                            <TableRow key={e.id}>
-                              <TableCell>{e.title}</TableCell>
-                              <TableCell>{e.description}</TableCell>
-                              <TableCell>
-                                {e.dateArchived
-                                  ? new Date(e.dateArchived).toLocaleDateString()
-                                  : "N/A"}
-                              </TableCell>
-                              <TableCell className="flex gap-2">
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => handleRecordAction("unarchive", e)}
-                                >
-                                  Unarchive
-                                </Button>
-                                <Button
-                                  variant="destructive"
-                                  size="sm"
-                                  onClick={() => handleRecordAction("delete", e)}
-                                >
-                                  Delete
-                                </Button>
-                              </TableCell>
-                            </TableRow>
-                          ))}
-                      </TableBody>
-                    </Table>
-                  ) : (
-                    <p className="text-gray-500">No archived events.</p>
-                  )}
-                </div>
+                    <PaginationControls
+                      page={archivePage}
+                      total={archivedRecords.length}
+                      setPage={setArchivePage}
+                    />
+                  </>
+                ) : (
+                  <p className="text-center text-gray-500">No archived records.</p>
+                )}
               </CardContent>
             </Card>
           </TabsContent>

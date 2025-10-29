@@ -119,6 +119,11 @@ export const MonetaryNonMonetaryList: React.FC = () => {
   // Filter state
   const [selectedDonationType, setSelectedDonationType] = useState("");
 
+  // Pagination states
+  const itemsPerPage = 10;
+  const [currentPageMonetary, setCurrentPageMonetary] = useState(1);
+  const [currentPageNonMonetary, setCurrentPageNonMonetary] = useState(1);
+
   // Filtered records logic
   const filteredMonetaryRecords = monetaryRecords
     .filter((r) => !r.isArchived)
@@ -128,16 +133,31 @@ export const MonetaryNonMonetaryList: React.FC = () => {
         : true
     );
 
-  // ✅ Add this: Compute total for filtered records
+  // Pagination logic (monetary)
+  const startIndexMonetary = (currentPageMonetary - 1) * itemsPerPage;
+  const paginatedMonetaryRecords = filteredMonetaryRecords.slice(
+    startIndexMonetary,
+    startIndexMonetary + itemsPerPage
+  );
+  const totalMonetaryPages = Math.ceil(filteredMonetaryRecords.length / itemsPerPage);
+
+  // Non-monetary pagination
+  const nonMonetaryActive = nonMonetaryRecords.filter((r) => !r.isArchived);
+  const startIndexNonMonetary = (currentPageNonMonetary - 1) * itemsPerPage;
+  const paginatedNonMonetaryRecords = nonMonetaryActive.slice(
+    startIndexNonMonetary,
+    startIndexNonMonetary + itemsPerPage
+  );
+  const totalNonMonetaryPages = Math.ceil(nonMonetaryActive.length / itemsPerPage);
+
+  // Compute total for filtered records
   const totalFilteredMonetary = filteredMonetaryRecords.reduce(
     (sum, record) => sum + Number(record.amount || 0),
     0
   );
 
-  // Donation types state
+  // Donation types
   const [donationTypes, setDonationTypes] = useState<{ id: string; name: string }[]>([]);
-
-  // Dynamically extract unique donation types from monetaryRecords
   useEffect(() => {
     const uniqueTypes = Array.from(
       new Set(
@@ -167,31 +187,27 @@ export const MonetaryNonMonetaryList: React.FC = () => {
               <CoinsIcon className="h-4 w-4" />
               Monetary
             </TabsTrigger>
-
             <TabsTrigger value="non-monetary" className="flex items-center gap-2 text-gray-700">
               <GiftIcon className="h-4 w-4" />
               Non-Monetary
             </TabsTrigger>
-
             <TabsTrigger value="archive" className="flex items-center gap-2 text-gray-700">
               <ArchiveIcon className="h-4 w-4" />
               Archive
             </TabsTrigger>
           </TabsList>
 
-          {/* Monetary Tab */}
+          {/* --- MONETARY TAB --- */}
           <TabsContent value="monetary">
             <Card>
               <CardHeader>
                 <div className="flex justify-between items-center">
                   <div>
                     <CardTitle className="text-2xl uppercase">Monetary Records</CardTitle>
-                    <CardDescription className="text-lg">
-                      All monetary contributions.
-                    </CardDescription>
+                    <CardDescription className="text-lg">All monetary contributions.</CardDescription>
                   </div>
 
-                  {/* 🔹 Donation Type Filter */}
+                  {/* Filter */}
                   <div className="flex items-center gap-2">
                     <label htmlFor="donationTypeFilter" className="text-sm text-gray-600">
                       Filter:
@@ -209,108 +225,143 @@ export const MonetaryNonMonetaryList: React.FC = () => {
                         </option>
                       ))}
                     </select>
-
                   </div>
                 </div>
               </CardHeader>
 
               <CardContent>
-                {filteredMonetaryRecords.length > 0 ? (
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Full Name</TableHead>
-                        <TableHead>Donation Type</TableHead>
-                        <TableHead>Amount</TableHead>
-                        <TableHead>Date Created</TableHead>
-                        <TableHead>Actions</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {filteredMonetaryRecords.map((record) => (
-                        <TableRow key={record.id}>
-                          <TableCell>{record.fullName}</TableCell>
-                          <TableCell>{toSentenceCase(record.donationType)}</TableCell>
-                          <TableCell>
-  {record.currency === "PHP" ? "₱" : ""}
-  {Number(record.amount).toLocaleString("en-PH", { minimumFractionDigits: 2 })}
-  {record.currency !== "PHP" ? ` ${record.currency}` : ""}
-</TableCell>
-
-                          <TableCell>
-                            {new Date(record.dateCreated).toLocaleDateString()}
-                          </TableCell>
-                          <TableCell>{renderActions(record)}</TableCell>
+                {paginatedMonetaryRecords.length > 0 ? (
+                  <>
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Full Name</TableHead>
+                          <TableHead>Donation Type</TableHead>
+                          <TableHead>Amount</TableHead>
+                          <TableHead>Date Created</TableHead>
+                          <TableHead>Actions</TableHead>
                         </TableRow>
-                      ))}
+                      </TableHeader>
+                      <TableBody>
+                        {paginatedMonetaryRecords.map((record) => (
+                          <TableRow key={record.id}>
+                            <TableCell>{record.fullName}</TableCell>
+                            <TableCell>{toSentenceCase(record.donationType)}</TableCell>
+                            <TableCell>
+                              {record.currency === "PHP" ? "₱" : ""}
+                              {Number(record.amount).toLocaleString("en-PH", { minimumFractionDigits: 2 })}
+                              {record.currency !== "PHP" ? ` ${record.currency}` : ""}
+                            </TableCell>
+                            <TableCell>{new Date(record.dateCreated).toLocaleDateString()}</TableCell>
+                            <TableCell>{renderActions(record)}</TableCell>
+                          </TableRow>
+                        ))}
+                        {/* Total Row */}
+                        <TableRow className="font-bold border-t border-gray-300">
+                          <TableCell>Total</TableCell>
+                          <TableCell>-</TableCell>
+                          <TableCell>
+                            ₱{totalFilteredMonetary.toLocaleString("en-PH", { minimumFractionDigits: 2 })}
+                          </TableCell>
+                          <TableCell>-</TableCell>
+                          <TableCell>-</TableCell>
+                        </TableRow>
+                      </TableBody>
+                    </Table>
 
-                      {/* Totals row */}
-                      <TableRow className="font-bold border-t border-gray-300">
-                        <TableCell>Total</TableCell>
-                        <TableCell>-</TableCell><TableCell>
-  ₱{totalFilteredMonetary.toLocaleString("en-PH", { minimumFractionDigits: 2 })}
-</TableCell>  
-                        <TableCell>-</TableCell>
-                        <TableCell>-</TableCell>
-                      </TableRow>
-                    </TableBody>
-                  </Table>
+                    {/* Pagination Controls */}
+                    <div className="flex justify-between items-center mt-4">
+                      <Button
+                        variant="outline"
+                        disabled={currentPageMonetary === 1}
+                        onClick={() => setCurrentPageMonetary((p) => p - 1)}
+                      >
+                        Previous
+                      </Button>
+                      <span className="text-sm text-gray-600">
+                        Page {currentPageMonetary} of {totalMonetaryPages}
+                      </span>
+                      <Button
+                        variant="outline"
+                        disabled={currentPageMonetary >= totalMonetaryPages}
+                        onClick={() => setCurrentPageMonetary((p) => p + 1)}
+                      >
+                        Next
+                      </Button>
+                    </div>
+                  </>
                 ) : (
-                  <p className="text-center text-gray-500 mt-4">
-                    No monetary records found.
-                  </p>
+                  <p className="text-center text-gray-500 mt-4">No monetary records found.</p>
                 )}
               </CardContent>
             </Card>
           </TabsContent>
 
-          {/* Non-Monetary Tab */}
+          {/* --- NON-MONETARY TAB --- */}
           <TabsContent value="non-monetary">
             <Card>
               <CardHeader>
                 <CardTitle className="text-2xl uppercase">Non-Monetary Records</CardTitle>
-                <CardDescription className="text-lg">All non-monetary contributions.</CardDescription>
+                <CardDescription className="text-lg">
+                  All non-monetary contributions.
+                </CardDescription>
               </CardHeader>
               <CardContent>
-                {nonMonetaryRecords.filter((r) => !r.isArchived).length > 0 ? (
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Full Name</TableHead>
-                        <TableHead>Donation Type</TableHead>
-                        <TableHead>Description</TableHead>
-                        <TableHead>Date Created</TableHead>
-                        <TableHead>Actions</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {nonMonetaryRecords
-                        .filter((r) => !r.isArchived)
-                        .map((record) => (
+                {paginatedNonMonetaryRecords.length > 0 ? (
+                  <>
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Full Name</TableHead>
+                          <TableHead>Donation Type</TableHead>
+                          <TableHead>Description</TableHead>
+                          <TableHead>Date Created</TableHead>
+                          <TableHead>Actions</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {paginatedNonMonetaryRecords.map((record) => (
                           <TableRow key={record.id}>
                             <TableCell>{record.fullName}</TableCell>
                             <TableCell>{toSentenceCase(record.donationType)}</TableCell>
                             <TableCell>{record.description || "-"}</TableCell>
-                            <TableCell>
-                              {new Date(record.dateCreated).toLocaleDateString()}
-                            </TableCell>
+                            <TableCell>{new Date(record.dateCreated).toLocaleDateString()}</TableCell>
                             <TableCell>{renderActions(record)}</TableCell>
                           </TableRow>
                         ))}
-                      {/* Totals row */}
-                      <TableRow className="font-bold border-t border-gray-300">
-                        <TableCell>Total</TableCell>
-                        <TableCell>-</TableCell>
-                        <TableCell>{totalNonMonetary} donations</TableCell>
-                        <TableCell>-</TableCell>
-                        <TableCell>-</TableCell>
-                      </TableRow>
-                    </TableBody>
-                  </Table>
+                        <TableRow className="font-bold border-t border-gray-300">
+                          <TableCell>Total</TableCell>
+                          <TableCell>-</TableCell>
+                          <TableCell>{totalNonMonetary} donations</TableCell>
+                          <TableCell>-</TableCell>
+                          <TableCell>-</TableCell>
+                        </TableRow>
+                      </TableBody>
+                    </Table>
+
+                    {/* Pagination */}
+                    <div className="flex justify-between items-center mt-4">
+                      <Button
+                        variant="outline"
+                        disabled={currentPageNonMonetary === 1}
+                        onClick={() => setCurrentPageNonMonetary((p) => p - 1)}
+                      >
+                        Previous
+                      </Button>
+                      <span className="text-sm text-gray-600">
+                        Page {currentPageNonMonetary} of {totalNonMonetaryPages}
+                      </span>
+                      <Button
+                        variant="outline"
+                        disabled={currentPageNonMonetary >= totalNonMonetaryPages}
+                        onClick={() => setCurrentPageNonMonetary((p) => p + 1)}
+                      >
+                        Next
+                      </Button>
+                    </div>
+                  </>
                 ) : (
-                  <p className="text-center text-gray-500 mt-4">
-                    No non-monetary records.
-                  </p>
+                  <p className="text-center text-gray-500 mt-4">No non-monetary records.</p>
                 )}
               </CardContent>
             </Card>
