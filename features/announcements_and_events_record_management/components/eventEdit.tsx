@@ -115,7 +115,7 @@ export const EventEdit: React.FC<Props> = ({ record, onClose }) => {
         <Label>Description</Label>
         <textarea
           {...register("description", { required: "Description is required" })}
-          className="border rounded p-2 min-h-[80px]"
+          className="border rounded p-2 min-h-20"
         />
         {errors.description && (
           <p className="text-red-500 text-sm">{errors.description.message}</p>

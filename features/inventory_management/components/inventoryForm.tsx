@@ -99,7 +99,7 @@ export const InventoryForm: React.FC = () => {
         <textarea
           placeholder="Enter file description"
           {...register("description", { required: "Description is required" })}
-          className="border rounded p-2 min-h-[80px]"
+          className="border rounded p-2 min-h-20"
         />
         {errors.description && <p className="text-red-500 text-sm">{errors.description.message}</p>}
       </div>
@@ -139,7 +139,7 @@ export const InventoryForm: React.FC = () => {
 
       {/* Submit */}
       <Button type="submit" disabled={uploading} className="w-full">
-        {uploading ? "Uploading..." : "Add Inventory PDF"}
+        {uploading ? "Uploading..." : "Add Inventory"}
       </Button>
     </form>
   );

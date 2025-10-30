@@ -32,6 +32,7 @@ import { IForm } from "@/features/inventory_management/components/form";
 import { MForm } from "@/features/membership_management/components/form";
 import { CashoutList } from "@/features/financial_record_management/components/cashoutList";
 import { NonMonetaryList } from "@/features/financial_record_management/components/nonMonetaryReports";
+import { LiveStreamList } from "@/features/livestream_management/components/livestreamList";
 
 type Tab = "dashboard" | "event" | "finance" | "member" | "inventory";
 
@@ -208,6 +209,9 @@ export default function AdminPage() {
             <div className="space-y-6">
               <div className="bg-white rounded-2xl shadow-md p-6">
                 <IForm />
+              </div>
+              <div className="bg-white rounded-2xl shadow-md p-6">
+                <LiveStreamList />
               </div>
               <div className="bg-white rounded-2xl shadow-md p-6">
                 <InventoryList />
