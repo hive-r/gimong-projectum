@@ -87,7 +87,7 @@ export const AnnouncementEventList: React.FC = () => {
   >(null);
 
   // 🔹 Pagination States
-  const itemsPerPage = 10;
+  const [pageSize, setPageSize] = useState(10);
   const [announcementPage, setAnnouncementPage] = useState(1);
   const [eventPage, setEventPage] = useState(1);
   const [archivePage, setArchivePage] = useState(1);
@@ -158,7 +158,6 @@ export const AnnouncementEventList: React.FC = () => {
     }
   }
 
-  // 🔹 Confirm delete
   async function confirmDelete() {
     if (!recordToDelete) return;
     try {
@@ -184,17 +183,73 @@ export const AnnouncementEventList: React.FC = () => {
   }
 
   // 🔹 Pagination helper
-  const paginate = <T,>(data: T[], page: number) => {
-    const start = (page - 1) * itemsPerPage;
-    return data.slice(start, start + itemsPerPage);
+  const paginate = <T,>(items: T[], page: number): T[] =>
+    items.slice((page - 1) * pageSize, page * pageSize);
+
+  // 🔹 Pagination Component (same as MembershipList)
+  const renderPagination = (
+    page: number,
+    setPage: React.Dispatch<React.SetStateAction<number>>,
+    totalItems: number
+  ) => {
+    const totalPages = Math.ceil(totalItems / pageSize);
+    if (totalPages <= 1) return null;
+
+    return (
+      <div className="flex justify-between items-center mt-4 text-sm">
+        <div className="flex items-center gap-2">
+          <span>Rows per page:</span>
+          <select
+            className="border rounded px-2 py-1"
+            value={pageSize}
+            onChange={(e) => setPageSize(Number(e.target.value))}
+          >
+            {[5, 10, 20].map((size) => (
+              <option key={size} value={size}>
+                {size}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={page === 1}
+            onClick={() => setPage((p) => p - 1)}
+          >
+            Previous
+          </Button>
+          <span>
+            Page {page} of {totalPages}
+          </span>
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={page === totalPages}
+            onClick={() => setPage((p) => p + 1)}
+          >
+            Next
+          </Button>
+        </div>
+      </div>
+    );
   };
 
-  // 🔹 Dropdown menu for actions
+  // 🔹 Filtering
+  const filteredAnnouncements = announcements.filter((a) => !a.isArchived);
+  const filteredEvents = events.filter((e) => !e.isArchived);
+  const archivedRecords = [
+    ...announcements.filter((a) => a.isArchived),
+    ...events.filter((e) => e.isArchived),
+  ];
+
+  // 🔹 Actions menu
   const renderActions = (record: AnnouncementRecord | EventRecord) => (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="h-8 w-8 p-0">
-          <span className="sr-only">Open menu</span>
           <MoreHorizontal />
         </Button>
       </DropdownMenuTrigger>
@@ -235,50 +290,13 @@ export const AnnouncementEventList: React.FC = () => {
     </DropdownMenu>
   );
 
-  // 🔹 Pagination Controls
-  const PaginationControls = ({
-    page,
-    total,
-    setPage,
-  }: {
-    page: number;
-    total: number;
-    setPage: (page: number) => void;
-  }) => (
-    <div className="flex items-center justify-center gap-4 mt-4">
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={() => setPage(page - 1)}
-        disabled={page === 1}
-      >
-        Previous
-      </Button>
-      <span className="text-sm text-gray-600">
-        Page {page} of {Math.ceil(total / itemsPerPage) || 1}
-      </span>
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={() => setPage(page + 1)}
-        disabled={page >= Math.ceil(total / itemsPerPage)}
-      >
-        Next
-      </Button>
-    </div>
-  );
-
-  const filteredAnnouncements = announcements.filter((a) => !a.isArchived);
-  const filteredEvents = events.filter((e) => !e.isArchived);
-  const archivedRecords = [...announcements.filter(a => a.isArchived), ...events.filter(e => e.isArchived)];
-
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
       <h1 className="text-4xl font-bold mb-6 text-center uppercase">
         Announcements & Events List
       </h1>
 
-      <div className="flex w-full max-w-5xl mx-auto flex-col gap-6">
+      <div className="max-w-5xl mx-auto">
         <Tabs defaultValue="announcement" className="w-full">
           <TabsList className="grid w-full grid-cols-3 bg-primary">
             <TabsTrigger value="announcement" className="text-gray-700 flex items-center gap-2">
@@ -292,7 +310,7 @@ export const AnnouncementEventList: React.FC = () => {
             </TabsTrigger>
           </TabsList>
 
-          {/* 🔹 Announcements Tab */}
+          {/* 🟢 Announcements */}
           <TabsContent value="announcement">
             <Card>
               <CardHeader>
@@ -324,20 +342,16 @@ export const AnnouncementEventList: React.FC = () => {
                         ))}
                       </TableBody>
                     </Table>
-                    <PaginationControls
-                      page={announcementPage}
-                      total={filteredAnnouncements.length}
-                      setPage={setAnnouncementPage}
-                    />
+                    {renderPagination(announcementPage, setAnnouncementPage, filteredAnnouncements.length)}
                   </>
                 ) : (
-                  <p className="text-center text-gray-500">No announcements.</p>
+                  <p className="text-center text-gray-500 mt-4">No announcements.</p>
                 )}
               </CardContent>
             </Card>
           </TabsContent>
 
-          {/* 🔹 Events Tab */}
+          {/* 🟠 Events */}
           <TabsContent value="event">
             <Card>
               <CardHeader>
@@ -369,25 +383,21 @@ export const AnnouncementEventList: React.FC = () => {
                         ))}
                       </TableBody>
                     </Table>
-                    <PaginationControls
-                      page={eventPage}
-                      total={filteredEvents.length}
-                      setPage={setEventPage}
-                    />
+                    {renderPagination(eventPage, setEventPage, filteredEvents.length)}
                   </>
                 ) : (
-                  <p className="text-center text-gray-500">No events.</p>
+                  <p className="text-center text-gray-500 mt-4">No events.</p>
                 )}
               </CardContent>
             </Card>
           </TabsContent>
 
-          {/* 🔹 Archived Tab */}
+          {/* 📦 Archived */}
           <TabsContent value="archive">
             <Card>
               <CardHeader>
                 <CardTitle className="text-2xl uppercase">Archived</CardTitle>
-                <CardDescription>All archived announcements and events</CardDescription>
+                <CardDescription>Archived announcements & events</CardDescription>
               </CardHeader>
               <CardContent>
                 {archivedRecords.length > 0 ? (
@@ -433,14 +443,10 @@ export const AnnouncementEventList: React.FC = () => {
                         ))}
                       </TableBody>
                     </Table>
-                    <PaginationControls
-                      page={archivePage}
-                      total={archivedRecords.length}
-                      setPage={setArchivePage}
-                    />
+                    {renderPagination(archivePage, setArchivePage, archivedRecords.length)}
                   </>
                 ) : (
-                  <p className="text-center text-gray-500">No archived records.</p>
+                  <p className="text-center text-gray-500 mt-4">No archived records.</p>
                 )}
               </CardContent>
             </Card>

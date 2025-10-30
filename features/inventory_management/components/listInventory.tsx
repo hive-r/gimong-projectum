@@ -62,6 +62,12 @@ export const InventoryList: React.FC = () => {
   const [viewDialogOpen, setViewDialogOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
 
+  // Pagination states
+  const [pageSize, setPageSize] = useState(10);
+  const [sermonPage, setSermonPage] = useState(1);
+  const [devotionalPage, setDevotionalPage] = useState(1);
+  const [archivedPage, setArchivedPage] = useState(1);
+
   useEffect(() => listenToInventory(setInventoryItems), []);
 
   const handleAction = async (
@@ -138,51 +144,73 @@ export const InventoryList: React.FC = () => {
     </div>
   );
 
-  // 🔹 Pagination Logic
-  const ITEMS_PER_PAGE = 10;
-  const [page, setPage] = useState(1);
-
-  const paginate = (items: InventoryItem[]) => {
-    const start = (page - 1) * ITEMS_PER_PAGE;
-    return items.slice(start, start + ITEMS_PER_PAGE);
-  };
-
+  // 🔹 Categorize inventory
   const sermons = inventoryItems.filter(i => !i.isArchived && i.category === "sermon");
   const devotionals = inventoryItems.filter(i => !i.isArchived && i.category === "devotional");
   const archivedItems = inventoryItems.filter(i => i.isArchived);
 
-  const totalPages = (items: InventoryItem[]) =>
-    Math.ceil(items.length / ITEMS_PER_PAGE);
+  // 🔹 Pagination logic
+  const paginate = <T,>(items: T[], page: number): T[] =>
+    items.slice((page - 1) * pageSize, page * pageSize);
 
-  const renderPagination = (items: InventoryItem[]) => {
-    if (items.length <= ITEMS_PER_PAGE) return null;
-
-    const total = totalPages(items);
+  const renderPagination = (
+    page: number,
+    setPage: React.Dispatch<React.SetStateAction<number>>,
+    totalItems: number
+  ) => {
+    const totalPages = Math.ceil(totalItems / pageSize);
+    if (totalPages <= 1) return null;
 
     return (
-      <div className="flex justify-center gap-4 mt-4">
-        <Button
-          variant="outline"
-          disabled={page === 1}
-          onClick={() => setPage((p) => Math.max(p - 1, 1))}
-        >
-          Previous
-        </Button>
-        <span className="text-sm text-gray-600">
-          Page {page} of {total}
-        </span>
-        <Button
-          variant="outline"
-          disabled={page === total}
-          onClick={() => setPage((p) => Math.min(p + 1, total))}
-        >
-          Next
-        </Button>
+      <div className="flex justify-between items-center mt-4 text-sm">
+        <div className="flex items-center gap-2">
+          <span>Rows per page:</span>
+          <select
+            className="border rounded px-2 py-1"
+            value={pageSize}
+            onChange={(e) => setPageSize(Number(e.target.value))}
+          >
+            {[5, 10, 20].map((size) => (
+              <option key={size} value={size}>
+                {size}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={page === 1}
+            onClick={() => setPage((p) => p - 1)}
+          >
+            Previous
+          </Button>
+          <span>
+            Page {page} of {totalPages}
+          </span>
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={page === totalPages}
+            onClick={() => setPage((p) => p + 1)}
+          >
+            Next
+          </Button>
+        </div>
       </div>
     );
   };
 
-  const renderTable = (items: InventoryItem[], showCategory = true, useButtons = false) =>
+  // 🔹 Table Renderer
+  const renderTable = (
+    items: InventoryItem[],
+    page: number,
+    setPage: React.Dispatch<React.SetStateAction<number>>,
+    showCategory = true,
+    useButtons = false
+  ) =>
     items.length > 0 ? (
       <>
         <Table>
@@ -196,7 +224,7 @@ export const InventoryList: React.FC = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {paginate(items).map(item => (
+            {paginate(items, page).map((item) => (
               <TableRow key={item.firestoreId ?? item.appwriteId}>
                 <TableCell>{item.name}</TableCell>
                 <TableCell>
@@ -212,7 +240,7 @@ export const InventoryList: React.FC = () => {
             ))}
           </TableBody>
         </Table>
-        {renderPagination(items)}
+        {renderPagination(page, setPage, items.length)}
       </>
     ) : (
       <p className="text-center text-gray-500 mt-4">No items found.</p>
@@ -222,7 +250,7 @@ export const InventoryList: React.FC = () => {
     <div className="p-6 bg-gray-100 min-h-screen">
       <h1 className="text-4xl font-bold mb-6 text-center uppercase">Resource List</h1>
       <div className="flex w-full max-w-5xl mx-auto flex-col gap-4">
-        <Tabs defaultValue="sermon" className="w-full" onValueChange={() => setPage(1)}>
+        <Tabs defaultValue="sermon" className="w-full">
           <TabsList className="grid w-full grid-cols-3 bg-primary">
             <TabsTrigger value="sermon" className="flex items-center gap-2 text-gray-700">
               <BookOpenIcon className="h-4 w-4" />
@@ -244,7 +272,7 @@ export const InventoryList: React.FC = () => {
                 <CardTitle className="text-2xl uppercase">Sermon Inventory</CardTitle>
                 <CardDescription className="text-lg">All sermon files.</CardDescription>
               </CardHeader>
-              <CardContent>{renderTable(sermons, false)}</CardContent>
+              <CardContent>{renderTable(sermons, sermonPage, setSermonPage, false)}</CardContent>
             </Card>
           </TabsContent>
 
@@ -254,7 +282,7 @@ export const InventoryList: React.FC = () => {
                 <CardTitle className="text-2xl uppercase">Devotional Inventory</CardTitle>
                 <CardDescription className="text-lg">All devotional files.</CardDescription>
               </CardHeader>
-              <CardContent>{renderTable(devotionals, false)}</CardContent>
+              <CardContent>{renderTable(devotionals, devotionalPage, setDevotionalPage, false)}</CardContent>
             </Card>
           </TabsContent>
 
@@ -264,7 +292,7 @@ export const InventoryList: React.FC = () => {
                 <CardTitle className="text-2xl uppercase">Archived Inventory</CardTitle>
                 <CardDescription className="text-lg">Previously archived files.</CardDescription>
               </CardHeader>
-              <CardContent>{renderTable(archivedItems, true, true)}</CardContent>
+              <CardContent>{renderTable(archivedItems, archivedPage, setArchivedPage, true, true)}</CardContent>
             </Card>
           </TabsContent>
         </Tabs>

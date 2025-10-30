@@ -119,12 +119,65 @@ export const MonetaryNonMonetaryList: React.FC = () => {
   // Filter state
   const [selectedDonationType, setSelectedDonationType] = useState("");
 
-  // Pagination states
-  const itemsPerPage = 10;
-  const [currentPageMonetary, setCurrentPageMonetary] = useState(1);
-  const [currentPageNonMonetary, setCurrentPageNonMonetary] = useState(1);
+  // 🔹 Pagination states (replacing old pagination)
+  const [pageSize, setPageSize] = useState(10);
+  const [pageMonetary, setPageMonetary] = useState(1);
+  const [pageNonMonetary, setPageNonMonetary] = useState(1);
 
-  // Filtered records logic
+  // 🔹 Pagination helpers
+  const paginate = <T,>(items: T[], page: number): T[] =>
+    items.slice((page - 1) * pageSize, page * pageSize);
+
+  const renderPagination = (
+    page: number,
+    setPage: React.Dispatch<React.SetStateAction<number>>,
+    totalItems: number
+  ) => {
+    const totalPages = Math.ceil(totalItems / pageSize);
+    if (totalPages <= 1) return null;
+    return (
+      <div className="flex justify-between items-center mt-4 text-sm">
+        <div className="flex items-center gap-2">
+          <span>Rows per page:</span>
+          <select
+            className="border rounded px-2 py-1"
+            value={pageSize}
+            onChange={(e) => setPageSize(Number(e.target.value))}
+          >
+            {[5, 10, 20].map((size) => (
+              <option key={size} value={size}>
+                {size}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={page === 1}
+            onClick={() => setPage((p) => p - 1)}
+          >
+            Previous
+          </Button>
+          <span>
+            Page {page} of {totalPages}
+          </span>
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={page === totalPages}
+            onClick={() => setPage((p) => p + 1)}
+          >
+            Next
+          </Button>
+        </div>
+      </div>
+    );
+  };
+
+  // 🔹 Filtered Monetary Records
   const filteredMonetaryRecords = monetaryRecords
     .filter((r) => !r.isArchived)
     .filter((r) =>
@@ -133,45 +186,19 @@ export const MonetaryNonMonetaryList: React.FC = () => {
         : true
     );
 
-  // Pagination logic (monetary)
-  const startIndexMonetary = (currentPageMonetary - 1) * itemsPerPage;
-  const paginatedMonetaryRecords = filteredMonetaryRecords.slice(
-    startIndexMonetary,
-    startIndexMonetary + itemsPerPage
-  );
-  const totalMonetaryPages = Math.ceil(filteredMonetaryRecords.length / itemsPerPage);
-
-  // Non-monetary pagination
-  const nonMonetaryActive = nonMonetaryRecords.filter((r) => !r.isArchived);
-  const startIndexNonMonetary = (currentPageNonMonetary - 1) * itemsPerPage;
-  const paginatedNonMonetaryRecords = nonMonetaryActive.slice(
-    startIndexNonMonetary,
-    startIndexNonMonetary + itemsPerPage
-  );
-  const totalNonMonetaryPages = Math.ceil(nonMonetaryActive.length / itemsPerPage);
-
-  // Compute total for filtered records
   const totalFilteredMonetary = filteredMonetaryRecords.reduce(
     (sum, record) => sum + Number(record.amount || 0),
     0
   );
 
-  // Donation types
-  const [donationTypes, setDonationTypes] = useState<{ id: string; name: string }[]>([]);
-  useEffect(() => {
-    const uniqueTypes = Array.from(
-      new Set(
-        monetaryRecords
-          .map((r) => r.donationType?.toLowerCase())
-          .filter(Boolean)
-      )
-    ).map((type) => ({
-      id: type,
-      name: type.charAt(0).toUpperCase() + type.slice(1),
-    }));
+  const donationTypes = Array.from(
+    new Set(monetaryRecords.map((r) => r.donationType?.toLowerCase()).filter(Boolean))
+  ).map((type) => ({
+    id: type,
+    name: type.charAt(0).toUpperCase() + type.slice(1),
+  }));
 
-    setDonationTypes(uniqueTypes);
-  }, [monetaryRecords]);
+  const activeNonMonetary = nonMonetaryRecords.filter((r) => !r.isArchived);
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
@@ -181,7 +208,6 @@ export const MonetaryNonMonetaryList: React.FC = () => {
 
       <div className="flex w-full max-w-5xl mx-auto flex-col gap-6">
         <Tabs defaultValue="monetary" className="w-full">
-          {/* Tab Headers */}
           <TabsList className="grid w-full grid-cols-3 bg-primary">
             <TabsTrigger value="monetary" className="flex items-center gap-2 text-gray-700">
               <CoinsIcon className="h-4 w-4" />
@@ -197,7 +223,7 @@ export const MonetaryNonMonetaryList: React.FC = () => {
             </TabsTrigger>
           </TabsList>
 
-          {/* --- MONETARY TAB --- */}
+          {/* 🟢 MONETARY TAB */}
           <TabsContent value="monetary">
             <Card>
               <CardHeader>
@@ -207,7 +233,6 @@ export const MonetaryNonMonetaryList: React.FC = () => {
                     <CardDescription className="text-lg">All monetary contributions.</CardDescription>
                   </div>
 
-                  {/* Filter */}
                   <div className="flex items-center gap-2">
                     <label htmlFor="donationTypeFilter" className="text-sm text-gray-600">
                       Filter:
@@ -230,7 +255,7 @@ export const MonetaryNonMonetaryList: React.FC = () => {
               </CardHeader>
 
               <CardContent>
-                {paginatedMonetaryRecords.length > 0 ? (
+                {filteredMonetaryRecords.length > 0 ? (
                   <>
                     <Table>
                       <TableHeader>
@@ -243,7 +268,7 @@ export const MonetaryNonMonetaryList: React.FC = () => {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {paginatedMonetaryRecords.map((record) => (
+                        {paginate(filteredMonetaryRecords, pageMonetary).map((record) => (
                           <TableRow key={record.id}>
                             <TableCell>{record.fullName}</TableCell>
                             <TableCell>{toSentenceCase(record.donationType)}</TableCell>
@@ -256,7 +281,6 @@ export const MonetaryNonMonetaryList: React.FC = () => {
                             <TableCell>{renderActions(record)}</TableCell>
                           </TableRow>
                         ))}
-                        {/* Total Row */}
                         <TableRow className="font-bold border-t border-gray-300">
                           <TableCell>Total</TableCell>
                           <TableCell>-</TableCell>
@@ -268,27 +292,7 @@ export const MonetaryNonMonetaryList: React.FC = () => {
                         </TableRow>
                       </TableBody>
                     </Table>
-
-                    {/* Pagination Controls */}
-                    <div className="flex justify-between items-center mt-4">
-                      <Button
-                        variant="outline"
-                        disabled={currentPageMonetary === 1}
-                        onClick={() => setCurrentPageMonetary((p) => p - 1)}
-                      >
-                        Previous
-                      </Button>
-                      <span className="text-sm text-gray-600">
-                        Page {currentPageMonetary} of {totalMonetaryPages}
-                      </span>
-                      <Button
-                        variant="outline"
-                        disabled={currentPageMonetary >= totalMonetaryPages}
-                        onClick={() => setCurrentPageMonetary((p) => p + 1)}
-                      >
-                        Next
-                      </Button>
-                    </div>
+                    {renderPagination(pageMonetary, setPageMonetary, filteredMonetaryRecords.length)}
                   </>
                 ) : (
                   <p className="text-center text-gray-500 mt-4">No monetary records found.</p>
@@ -297,7 +301,7 @@ export const MonetaryNonMonetaryList: React.FC = () => {
             </Card>
           </TabsContent>
 
-          {/* --- NON-MONETARY TAB --- */}
+          {/* 🟠 NON-MONETARY TAB */}
           <TabsContent value="non-monetary">
             <Card>
               <CardHeader>
@@ -307,7 +311,7 @@ export const MonetaryNonMonetaryList: React.FC = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                {paginatedNonMonetaryRecords.length > 0 ? (
+                {activeNonMonetary.length > 0 ? (
                   <>
                     <Table>
                       <TableHeader>
@@ -320,7 +324,7 @@ export const MonetaryNonMonetaryList: React.FC = () => {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {paginatedNonMonetaryRecords.map((record) => (
+                        {paginate(activeNonMonetary, pageNonMonetary).map((record) => (
                           <TableRow key={record.id}>
                             <TableCell>{record.fullName}</TableCell>
                             <TableCell>{toSentenceCase(record.donationType)}</TableCell>
@@ -338,27 +342,7 @@ export const MonetaryNonMonetaryList: React.FC = () => {
                         </TableRow>
                       </TableBody>
                     </Table>
-
-                    {/* Pagination */}
-                    <div className="flex justify-between items-center mt-4">
-                      <Button
-                        variant="outline"
-                        disabled={currentPageNonMonetary === 1}
-                        onClick={() => setCurrentPageNonMonetary((p) => p - 1)}
-                      >
-                        Previous
-                      </Button>
-                      <span className="text-sm text-gray-600">
-                        Page {currentPageNonMonetary} of {totalNonMonetaryPages}
-                      </span>
-                      <Button
-                        variant="outline"
-                        disabled={currentPageNonMonetary >= totalNonMonetaryPages}
-                        onClick={() => setCurrentPageNonMonetary((p) => p + 1)}
-                      >
-                        Next
-                      </Button>
-                    </div>
+                    {renderPagination(pageNonMonetary, setPageNonMonetary, activeNonMonetary.length)}
                   </>
                 ) : (
                   <p className="text-center text-gray-500 mt-4">No non-monetary records.</p>
